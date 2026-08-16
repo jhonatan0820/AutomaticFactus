@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-doc-word="titulo-pagina">Nueva cotización — Dotaciones Zambrano</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="apple-touch-icon" href="/img/favicon.ico">
+    <style>
+        :root {
+            --c-ink: #1a1f2b;
+            --c-ink-soft: #4a5568;
+            --c-muted: #7a8598;
+            --c-line: #e4e8ef;
+            --c-bg: #f6f7fa;
+            --c-surface: #ffffff;
+            --c-accent: #0f2a4a;
+            --c-accent-soft: #eaf0f7;
+            --c-danger: #b42318;
+            --radius: 6px;
+            --font: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        html, body {
+            margin: 0; padding: 0;
+            background: var(--c-bg); color: var(--c-ink);
+            font-family: var(--font);
+            font-size: 15px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        body { min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
+        .shell {
+            max-width: 960px;
+            margin-inline: auto;
+            margin-block: clamp(12px, 4vw, 32px);
+            padding-inline: clamp(12px, 4vw, 16px);
+        }
+        .card {
+            position: relative;
+            background: var(--c-surface);
+            border: 1px solid var(--c-line);
+            border-radius: var(--radius);
+            padding: clamp(16px, 4vw, 32px) clamp(16px, 5vw, 40px);
+            box-shadow: 0 1px 2px rgba(15,42,74,0.04);
+        }
+        h1 { margin: 0 0 4px; font-size: clamp(19px, 4.5vw, 22px); color: var(--c-accent); }
+        .sub { margin: 0 0 clamp(16px, 4vw, 24px); color: var(--c-muted); font-size: clamp(12px, 3vw, 13px); }
+        h2 {
+            font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase;
+            color: var(--c-muted); margin: clamp(18px, 4vw, 24px) 0 12px; font-weight: 600;
+        }
+
+        .grid { display: grid; gap: 12px; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .field { display: flex; flex-direction: column; gap: 4px; }
+        .field label { font-size: 12px; color: var(--c-ink-soft); font-weight: 500; }
+        .field input, .field textarea, .field select {
+            padding: 10px 12px; border: 1px solid var(--c-line); border-radius: var(--radius);
+            background: #fff; color: var(--c-ink); font: inherit; outline: none;
+            min-height: 42px;
+            width: 100%;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(15,42,74,.08); }
+        .field select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237a8598' d='M0 0l5 6 5-6z'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+        .field-group { display: grid; grid-template-columns: 100px 1fr; gap: 8px; }
+        .field-group--labeled .field-group__cell { display: flex; flex-direction: column; gap: 4px; }
+        .field-group__cell label { font-size: 12px; color: var(--c-ink-soft); font-weight: 500; }
+
+        .items { border: 1px solid var(--c-line); border-radius: var(--radius); overflow: hidden; }
+        .items__row {
+            display: grid;
+            grid-template-columns: 36px minmax(0,3fr) 70px 70px 110px 110px 36px;
+            align-items: center; gap: 8px; padding: 10px 12px;
+            border-bottom: 1px solid var(--c-line);
+        }
+        .items__row:last-child { border-bottom: none; }
+        .items__row--head { background: var(--c-accent); color: #fff; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+        .items__row--head > div { padding: 4px 0; }
+        .items__row input {
+            width: 100%; padding: 8px 10px;
+            border: 1px solid var(--c-line); border-radius: 4px;
+            font: inherit; background: #fff; min-height: 40px;
+        }
+        .items__row input:focus { border-color: var(--c-accent); outline: none; box-shadow: 0 0 0 3px rgba(15,42,74,.08); }
+        .items__row input.js-qty { text-align: right; }
+        .items__row input.js-price { text-align: right; }
+        .items__row .cell-label { display: none; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--c-muted); font-weight: 600; margin-bottom: 4px; }
+
+        /* Ocultar flechas de spinner en inputs numéricos */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+        .items__row .idx { text-align: center; color: var(--c-muted); font-weight: 500; }
+        .items__row .total { text-align: right; font-weight: 600; padding-right: 4px; white-space: nowrap; }
+        .btn-remove {
+            background: transparent; border: none; color: var(--c-danger); cursor: pointer;
+            font-size: 20px; line-height: 1;
+            width: 36px; height: 36px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 6px;
+        }
+        .btn-remove:hover { background: rgba(180,35,24,.08); }
+
+        .actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .btn {
+            padding: 12px 20px; border-radius: var(--radius);
+            border: 1px solid var(--c-accent); background: #fff; color: var(--c-accent);
+            font: inherit; font-weight: 600; cursor: pointer;
+            min-height: 44px;
+            transition: background .15s;
+        }
+        .btn:hover { background: var(--c-accent-soft); }
+        .btn--primary { background: var(--c-accent); color: #fff; }
+        .btn--primary:hover { background: #0a1f38; }
+        .btn--ghost { border-color: var(--c-line); color: var(--c-ink-soft); }
+        .btn--ghost:hover { background: #f0f2f6; }
+        .btn__spinner { display: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: btn-spin .7s linear infinite; }
+        .btn.is-loading { opacity: .75; cursor: progress; pointer-events: none; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+        .btn.is-loading .btn__spinner { display: inline-block; }
+        .btn[disabled] { opacity: .6; cursor: not-allowed; }
+        @keyframes btn-spin { to { transform: rotate(360deg); } }
+
+        .totals { margin-top: 16px; padding: 14px 18px; background: var(--c-accent-soft); border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .totals__label { text-transform: uppercase; letter-spacing: 1.4px; color: var(--c-accent); font-size: 12px; font-weight: 600; }
+        .totals__value { color: var(--c-accent); font-size: clamp(20px, 5vw, 22px); font-weight: 700; }
+
+        .error { color: var(--c-danger); font-size: 13px; margin-top: 8px; }
+        .field--invalid input, .field--invalid select { border-color: var(--c-danger) !important; background: #fef3f2; }
+        .field__hint { font-size: 12px; color: var(--c-danger); margin-top: 4px; display: none; }
+        .field--invalid .field__hint { display: block; }
+        .quotation-number { font-size: 13px; color: var(--c-muted); margin: -4px 0 12px; }
+        .quotation-number__value { color: var(--c-text, #111); font-weight: 600; font-variant-numeric: tabular-nums; }
+        .quotation-number__input { margin-left: 6px; padding: 4px 8px; font-size: 13px; font-weight: 600; color: var(--c-text, #111); background: transparent; border: 0; border-bottom: 1px dashed var(--c-border, #d9dce3); outline: none; width: 120px; font-variant-numeric: tabular-nums; }
+        .quotation-number__input:focus { border-bottom-color: var(--c-primary, #1f4bd8); }
+
+        /* ---------- Advisor picker ---------- */
+        .advisor-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 8px; margin-bottom: 8px; }
+        .advisor-option { position: relative; cursor: pointer; }
+        .advisor-option input[type="radio"] { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+        .advisor-option__box {
+            display: flex; flex-direction: column; gap: 4px;
+            padding: 14px 16px; border: 2px solid var(--c-line); border-radius: var(--radius);
+            background: #fff; transition: all .15s ease;
+            min-height: 64px;
+        }
+        .advisor-option input[type="radio"]:hover + .advisor-option__box { border-color: var(--c-line-strong); background: #fafbfd; }
+        .advisor-option input[type="radio"]:focus-visible + .advisor-option__box { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+        .advisor-option input[type="radio"]:checked + .advisor-option__box {
+            border-color: var(--c-accent);
+            background: var(--c-accent-soft);
+            box-shadow: 0 0 0 1px var(--c-accent) inset;
+        }
+        .advisor-option__name { font-weight: 600; color: var(--c-ink); font-size: 14px; }
+        .advisor-option__phone { color: var(--c-ink-soft); font-size: 13px; font-variant-numeric: tabular-nums; }
+        .advisor-picker.field--invalid .advisor-option__box { border-color: var(--c-danger); }
+
+        /* ---------- Toast ---------- */
+        .toast {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 16px);
+            right: 16px; left: 16px;
+            z-index: 100;
+            background: var(--c-ink); color: #fff;
+            padding: 12px 16px;
+            border-radius: 10px; font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.2);
+            display: flex; align-items: center; gap: 10px;
+            transform: translateY(-140%);
+            transition: transform .25s ease;
+        }
+        .toast[data-show="true"] { transform: translateY(0); }
+        .toast--error { background: var(--c-danger); }
+        .toast--success { background: #067647; }
+        .toast__icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+        @media (min-width: 640px) {
+            .toast {
+                top: 24px; right: 24px; left: auto;
+                max-width: 380px;
+                transform: translateX(120%);
+            }
+            .toast[data-show="true"] { transform: translateX(0); }
+        }
+
+        /* ---------- Flash verde en campos autocompletados ---------- */
+        @keyframes fieldFlash {
+            0%   { box-shadow: 0 0 0 0 rgba(6,118,71,0); background-color: transparent; }
+            15%  { box-shadow: 0 0 0 4px rgba(6,118,71,.25); background-color: #e8f7ef; }
+            100% { box-shadow: 0 0 0 0 rgba(6,118,71,0); background-color: transparent; }
+        }
+        .field-flash { animation: fieldFlash 1.6s ease-out; border-color: #067647 !important; }
+
+        /* ---------- Modal minimalista centrado ---------- */
+        .center-alert {
+            position: fixed; inset: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(15, 23, 42, .35);
+            opacity: 0; pointer-events: none;
+            transition: opacity .18s ease;
+        }
+        .center-alert[data-show="true"] { opacity: 1; pointer-events: auto; }
+        .center-alert__box {
+            background: #fff; border-radius: 16px;
+            padding: 24px 28px; min-width: 260px; max-width: 90vw;
+            box-shadow: 0 20px 50px rgba(0,0,0,.25);
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            transform: scale(.92); transition: transform .18s ease;
+            text-align: center;
+        }
+        .center-alert[data-show="true"] .center-alert__box { transform: scale(1); }
+        .center-alert__icon {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: #067647; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; font-weight: 700; line-height: 1;
+        }
+        .center-alert__title { font-size: 15px; font-weight: 600; color: var(--c-ink); margin: 0; }
+        @media (max-width: 480px) {
+            .center-alert__box { padding: 20px 22px; min-width: 220px; border-radius: 14px; gap: 10px; }
+            .center-alert__icon { width: 48px; height: 48px; font-size: 26px; }
+            .center-alert__title { font-size: 14px; }
+        }
+
+        /* ---------- Splash inicial (elegir doc + calentar BD) ---------- */
+        .doc-switch {
+            position: absolute; top: 14px; right: 14px; z-index: 2;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 14px; border-radius: var(--radius);
+            border: 1px solid var(--c-accent);
+            background: #fff; color: var(--c-accent);
+            font: inherit; font-size: 12px; font-weight: 600;
+            letter-spacing: .3px;
+            cursor: pointer;
+            transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+        }
+        .doc-switch:hover  { background: var(--c-accent-soft); box-shadow: 0 2px 8px rgba(15,42,74,.10); }
+        .doc-switch:active { transform: translateY(1px); }
+        .doc-switch:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(15,42,74,.15); }
+        .doc-switch__icon { flex: none; }
+        @media (max-width: 480px) {
+            .doc-switch { padding: 8px 10px; }
+            .doc-switch__label { display: none; }
+        }
+        .splash {
+            position: fixed; inset: 0; z-index: 300;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(15, 23, 42, .55);
+            backdrop-filter: blur(4px);
+            padding: 20px;
+            opacity: 1; transition: opacity .25s ease;
+        }
+        .splash[hidden] { display: none; }
+        .splash.is-hiding { opacity: 0; pointer-events: none; }
+        .splash__box {
+            background: #fff; border-radius: 18px;
+            padding: 28px 26px; width: 100%; max-width: 420px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.3);
+            text-align: center;
+        }
+        .splash__title { margin: 0 0 6px; font-size: 20px; font-weight: 700; color: var(--c-ink); }
+        .splash__desc { margin: 0 0 22px; font-size: 14px; color: var(--c-muted); }
+        .splash__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .splash__btn {
+            appearance: none; border: 1.5px solid var(--c-line);
+            background: #fff; border-radius: 14px;
+            padding: 20px 12px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            transition: border-color .15s ease, transform .1s ease, box-shadow .15s ease;
+            font: inherit; color: var(--c-ink);
+        }
+        .splash__btn:hover { border-color: var(--c-primary, #1f4bd8); box-shadow: 0 6px 16px rgba(31,75,216,.15); }
+        .splash__btn:active { transform: scale(.97); }
+        .splash__btn-icon { font-size: 28px; line-height: 1; }
+        .splash__btn-label { font-size: 15px; font-weight: 600; }
+        .splash__spinner {
+            width: 48px; height: 48px; margin: 4px auto 16px;
+            border: 4px solid #e5e9f2; border-top-color: var(--c-primary, #1f4bd8);
+            border-radius: 50%; animation: splashSpin .9s linear infinite;
+        }
+        @keyframes splashSpin { to { transform: rotate(360deg); } }
+        .splash__loading-title { margin: 0 0 4px; font-size: 16px; font-weight: 600; color: var(--c-ink); }
+        .splash__loading-desc  { margin: 0; font-size: 13px; color: var(--c-muted); line-height: 1.45; }
+        @media (max-width: 480px) {
+            .splash__box { padding: 24px 20px; border-radius: 16px; }
+            .splash__title { font-size: 18px; }
+            .splash__btn { padding: 18px 8px; border-radius: 12px; }
+            .splash__btn-icon { font-size: 26px; }
+            .splash__btn-label { font-size: 14px; }
+        }
+
+        /* ---------- Delivery ---------- */
+        .delivery { border: 1px solid var(--c-line); border-radius: var(--radius); padding: 14px 16px; background: #fafbfd; }
+        .delivery__toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 500; color: var(--c-ink); flex-wrap: wrap; }
+        .delivery__row {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) 90px 140px 140px;
+            gap: 10px; margin-top: 12px;
+        }
+        .delivery__row .field label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--c-muted); font-weight: 600; }
+        .delivery__row input {
+            padding: 10px 12px; border: 1px solid var(--c-line); border-radius: 4px;
+            font: inherit; background: #fff; width: 100%; min-height: 42px;
+        }
+        .delivery__row input:focus { border-color: var(--c-accent); outline: none; box-shadow: 0 0 0 3px rgba(15,42,74,.08); }
+        .delivery__row input[readonly] { background: #f0f2f6; color: var(--c-ink-soft); cursor: not-allowed; }
+        .delivery__total {
+            padding: 10px 12px; font-weight: 600; text-align: right; color: var(--c-ink);
+            background: #fff; border: 1px solid var(--c-line); border-radius: 4px;
+            min-height: 42px; display: flex; align-items: center; justify-content: flex-end;
+        }
+
+        /* ---------- Toggle Sí/No ---------- */
+        .toggle-yn { position: relative; display: inline-flex; border: 1px solid var(--c-line); border-radius: 999px; padding: 3px; background: #fff; gap: 0; overflow: hidden; }
+        .toggle-yn::before {
+            content: "";
+            position: absolute;
+            top: 3px; bottom: 3px;
+            left: 3px;
+            width: calc(50% - 3px);
+            border-radius: 999px;
+            background: var(--c-accent);
+            box-shadow: 0 1px 2px rgba(15,42,74,.25);
+            transition: transform .25s cubic-bezier(.4,0,.2,1);
+            transform: translateX(100%);
+            z-index: 0;
+        }
+        .toggle-yn[data-value="si"]::before { transform: translateX(0); }
+        .toggle-yn__btn {
+            position: relative; z-index: 1;
+            border: none; background: transparent; color: var(--c-ink-soft);
+            padding: 8px 22px; border-radius: 999px; cursor: pointer;
+            font: inherit; font-weight: 600; font-size: 14px; min-width: 56px;
+            min-height: 40px;
+            transition: color .25s;
+        }
+        .toggle-yn__btn:hover { color: var(--c-ink); }
+        .toggle-yn__btn.is-active { color: #fff; }
+
+        /* ---------- Modal ---------- */
+        .modal { position: fixed; inset: 0; background: rgba(15,42,74,.55); display: none; align-items: center; justify-content: center; z-index: 50; padding: clamp(0px, 3vw, 24px); }
+        .modal[open] { display: flex; }
+        .modal__panel {
+            background: var(--c-surface);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 960px;
+            height: min(90vh, 900px);
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 20px 60px rgba(15,42,74,.35);
+        }
+        .modal__header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; border-bottom: 1px solid var(--c-line);
+            gap: 8px; flex-wrap: wrap;
+        }
+        .modal__title { margin: 0; font-size: 15px; color: var(--c-accent); font-weight: 600; flex: 1 1 auto; min-width: 0; }
+        .modal__actions { display: flex; gap: 8px; align-items: center; }
+        .modal__actions .btn { padding: 8px 14px; min-height: 40px; font-size: 13px; }
+        .modal__close {
+            background: transparent; border: none; font-size: 22px; line-height: 1;
+            color: var(--c-muted); cursor: pointer;
+            width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 6px;
+        }
+        .modal__close:hover { background: #f0f2f6; color: var(--c-ink); }
+        .modal__body { flex: 1; background: var(--c-bg); overflow: auto; -webkit-overflow-scrolling: touch; }
+        .modal__body iframe { border: none; background: #fff; display: block; }
+
+        /* Controles de zoom del preview */
+        .zoom-controls { display: inline-flex; align-items: stretch; border: 1px solid #d7dbe3; border-radius: 8px; overflow: hidden; background: #fff; }
+        .zoom-btn { border: none; background: #fff; color: var(--c-ink); padding: 6px 10px; font-size: 14px; line-height: 1; cursor: pointer; min-width: 34px; }
+        .zoom-btn:hover { background: #f0f2f6; }
+        .zoom-btn + .zoom-btn { border-left: 1px solid #e5e8ee; }
+        .zoom-btn--reset { min-width: 56px; font-size: 12px; font-weight: 600; color: var(--c-accent); }
+
+        /* =================================================================
+           MEDIA QUERIES – Mobile first, adaptativo
+           ================================================================= */
+
+        /* --- Tablet (< 720px): apila columnas dobles y encoge módulos --- */
+        @media (max-width: 720px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .field-group { grid-template-columns: 90px 1fr; }
+            .actions { flex-direction: column; align-items: stretch; }
+            .actions .btn { width: 100%; }
+            .delivery__toggle { flex-direction: row; align-items: center; }
+            .totals { padding: 14px 16px; }
+        }
+
+        /* --- Móvil grande (< 640px): tabla de productos → cards apiladas --- */
+        @media (max-width: 640px) {
+            /* Ocultar cabecera de tabla y mostrar la fila como card */
+            .items { border: none; background: transparent; overflow: visible; }
+            .items__row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "idx    remove"
+                    "desc   desc"
+                    "talla  qty"
+                    "price  total";
+                gap: 8px 12px;
+                padding: 14px;
+                background: #fff;
+                border: 1px solid var(--c-line);
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+            .items__row:last-child { margin-bottom: 0; }
+            .items__row .cell-label { display: block; }
+            .items__row > div:nth-child(1) { grid-area: idx; text-align: left; font-weight: 700; color: var(--c-accent); }
+            .items__row > div:nth-child(1)::before { content: "#"; margin-right: 4px; color: var(--c-muted); font-weight: 500; }
+            .items__row > div:nth-child(2) { grid-area: desc; }
+            .items__row > div:nth-child(3) { grid-area: talla; }
+            .items__row > div:nth-child(4) { grid-area: qty; }
+            .items__row > div:nth-child(5) { grid-area: price; }
+            .items__row > div:nth-child(6) {
+                grid-area: total; text-align: right; padding: 0; align-self: end;
+                font-size: 15px; color: var(--c-accent);
+            }
+            .items__row > div:nth-child(6)::before { content: "Total"; display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--c-muted); font-weight: 600; margin-bottom: 2px; }
+            .items__row > div:nth-child(7) { grid-area: remove; justify-self: end; }
+            .items__row input.js-qty,
+            .items__row input.js-price { text-align: left; }
+
+            /* Ocultar cabecera de tabla — debe ir después de .items__row para ganar en cascada */
+            .items__row--head { display: none; }
+
+            /* Delivery: apila descripción arriba, luego grilla 3 col para qty/price/total */
+            .delivery__row {
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-areas:
+                    "desc  desc  desc"
+                    "qty   price price"
+                    "total total total";
+            }
+            .delivery__row .field:nth-child(1) { grid-area: desc; }
+            .delivery__row .field:nth-child(2) { grid-area: qty; }
+            .delivery__row .field:nth-child(3) { grid-area: price; }
+            .delivery__row .field:nth-child(4) { grid-area: total; }
+
+            /* Modal: full screen sin bordes */
+            .modal { padding: 0; }
+            .modal__panel { height: 100dvh; max-width: none; border-radius: 0; }
+        }
+
+        /* --- Móvil pequeño (≤ 400px): compacta más --- */
+        @media (max-width: 400px) {
+            .card { padding: 14px; }
+            .field-group { grid-template-columns: 80px 1fr; gap: 6px; }
+            .toggle-yn__btn { padding: 8px 16px; min-width: 48px; }
+            .items__row { padding: 12px; }
+            .delivery__row {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "desc  desc"
+                    "qty   price"
+                    "total total";
+            }
+            .modal__actions .btn { padding: 8px 10px; font-size: 12px; }
+        }
+
+        /* --- Móviles muy pequeños en landscape / < 340px: reajusta el toggle --- */
+        @media (max-width: 340px) {
+            .delivery__toggle { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<main class="shell">
+    <div class="card">
+        <button type="button" class="doc-switch" id="btn-change-doc-type"
+                title="Cambiar documento" aria-label="Cambiar documento">
+            <svg class="doc-switch__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8h13l-3-3"/>
+                <path d="M20 16H7l3 3"/>
+            </svg>
+            <span class="doc-switch__label">Cambiar documento</span>
+        </button>
+        <h1 data-doc-word="titulo-h1">Nueva cotización</h1>
+        <p class="sub" data-doc-word="descripcion-form">Complete los datos, agregue los productos que necesite y genere la cotización.</p>
+
+        <form id="quotation-form" novalidate>
+            <h2>Asesor de contacto</h2>
+            <p class="sub" style="margin-top: -6px;" data-doc-word="descripcion-asesor">Selecciona el asesor cuyo número aparecerá en la cotización.</p>
+            <div class="advisor-picker" role="radiogroup" aria-label="Asesor de contacto">
+                <label class="advisor-option">
+                    <input type="radio" name="advisor" value="marisol" data-name="Marisol Zambrano" data-phone="3226922111" required>
+                    <span class="advisor-option__box">
+                        <span class="advisor-option__name">Marisol Zambrano</span>
+                        <span class="advisor-option__phone">322 692 2111</span>
+                    </span>
+                </label>
+                <label class="advisor-option">
+                    <input type="radio" name="advisor" value="angie" data-name="Angie Zambrano" data-phone="3136673447" required>
+                    <span class="advisor-option__box">
+                        <span class="advisor-option__name">Angie Zambrano</span>
+                        <span class="advisor-option__phone">313 667 3447</span>
+                    </span>
+                </label>
+            </div>
+
+            <h2>Cliente</h2>
+            <div class="grid grid-2">
+                <div class="field">
+                    <label for="cliente_nombre">Nombre o razón social del cliente</label>
+                    <input id="cliente_nombre" name="cliente_nombre" type="text" required placeholder="Ej. Dotaciones Zambrano">
+                </div>
+                <div class="field" style="align-self: end">
+                    <div class="field-group field-group--labeled">
+                        <div class="field-group__cell">
+                            <label for="cliente_tipo_id">Tipo Doc</label>
+                            <select id="cliente_tipo_id" name="cliente_tipo_id" required data-fallback='["CC","NIT","TI","CE","PPT","Pasaporte"]'>
+                                <option value="CC">CC</option>
+                                <option value="NIT">NIT</option>
+                                <option value="TI">TI</option>
+                                <option value="CE">CE</option>
+                                <option value="PPT">PPT</option>
+                                <option value="Pasaporte">Pasaporte</option>
+                            </select>
+                        </div>
+                        <div class="field-group__cell">
+                            <label for="cliente_nit">Número de documento</label>
+                            <input id="cliente_nit" name="cliente_nit" type="text" required placeholder="Ej. 1023456789">
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="cliente_telefono">Teléfono de contacto</label>
+                    <input id="cliente_telefono" name="cliente_telefono" type="tel" required placeholder="Ej. 3157894213">
+                </div>
+                <div class="field">
+                    <label for="cliente_correo">Correo electrónico <span style="color:var(--c-muted);font-weight:400">(opcional)</span></label>
+                    <input id="cliente_correo" name="cliente_correo" type="email" placeholder="Ej. compras@andinatextil.co">
+                </div>
+                <div class="field" style="grid-column: 1 / -1">
+                    <label for="cliente_direccion">Dirección de entrega</label>
+                    <input id="cliente_direccion" name="cliente_direccion" type="text" required placeholder="Ej. Calle 70 sur # 91-40">
+                </div>
+            </div>
+
+            <h2 data-doc-word="datos-titulo">Datos de la cotización</h2>
+            <p class="quotation-number">N.º <span data-doc-word="numero-label">cotización</span> <span class="quotation-number__value" id="numero_display">—</span></p>
+            <input id="numero" name="numero" type="hidden">
+            <div class="grid grid-2">
+                <div class="field">
+                    <label for="fecha">Fecha</label>
+                    <input id="fecha" name="fecha" type="date" required>
+                </div>
+            </div>
+
+            <h2>Productos / Servicios</h2>
+            <div class="items">
+                <div class="items__row items__row--head">
+                    <div class="idx">#</div>
+                    <div>Descripción</div>
+                    <div>Talla</div>
+                    <div>Cantidad</div>
+                    <div>Precio unitario</div>
+                    <div style="text-align:right">Precio total</div>
+                    <div></div>
+                </div>
+                <div id="items-body"></div>
+            </div>
+
+            <div class="actions">
+                <button type="button" id="add-item" class="btn btn--ghost">+ Agregar producto</button>
+            </div>
+
+            <h2 style="margin-top: 32px;">Servicio de domicilio <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-muted);">(opcional)</span></h2>
+            <div class="delivery">
+                <div class="delivery__toggle">
+                    <span>¿Incluir servicio de domicilio?</span>
+                    <div class="toggle-yn" role="group" aria-label="Incluir servicio de domicilio" data-value="no" id="delivery-toggle">
+                        <button type="button" class="toggle-yn__btn" data-value="si" id="delivery-yes">Sí</button>
+                        <button type="button" class="toggle-yn__btn is-active" data-value="no" id="delivery-no">No</button>
+                    </div>
+                </div>
+                <div class="delivery__row" id="delivery-fields" hidden>
+                    <div class="field">
+                        <label for="delivery_desc">Descripción</label>
+                        <input id="delivery_desc" type="text" value="Servicio de Domicilio" readonly>
+                    </div>
+                    <div class="field">
+                        <label for="delivery_qty">Cantidad</label>
+                        <input id="delivery_qty" type="number" min="1" step="1" inputmode="numeric" value="1">
+                    </div>
+                    <div class="field">
+                        <label for="delivery_price">Precio</label>
+                        <input id="delivery_price" type="text" inputmode="numeric" value="$ 0">
+                    </div>
+                    <div class="field">
+                        <label>Total</label>
+                        <div class="delivery__total" id="delivery-total">$ 0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="totals" style="margin-top: 24px;">
+                <span class="totals__label">Total</span>
+                <span class="totals__value" id="grand-total">$ 0</span>
+            </div>
+
+            <h2>Observaciones</h2>
+            <div class="field">
+                <textarea id="observaciones" name="observaciones" rows="3" placeholder="Notas u observaciones adicionales (opcional)"></textarea>
+            </div>
+
+            <div class="actions" style="justify-content:flex-end">
+                <button type="reset" class="btn btn--ghost" id="btn-reset">Limpiar</button>
+                <button type="submit" class="btn btn--primary" id="btn-submit">
+                    <span class="btn__label" data-doc-word="btn-generar">Generar cotización</span>
+                    <span class="btn__spinner" aria-hidden="true"></span>
+                </button>
+            </div>
+            <p class="error" id="form-error" hidden></p>
+        </form>
+    </div>
+</main>
+
+<div class="toast" id="toast" role="alert" aria-live="polite">
+    <span class="toast__icon" id="toast-icon">⚠</span>
+    <span id="toast-msg">Mensaje</span>
+</div>
+
+<div class="center-alert" id="center-alert" role="dialog" aria-live="polite" aria-hidden="true">
+    <div class="center-alert__box">
+        <div class="center-alert__icon" aria-hidden="true">✓</div>
+        <p class="center-alert__title" id="center-alert-title">Cliente encontrado</p>
+    </div>
+</div>
+
+<div class="splash" id="splash" role="dialog" aria-modal="true" aria-labelledby="splash-title">
+    <div class="splash__box">
+        <div class="splash__step" data-step="choose">
+            <h2 class="splash__title" id="splash-title">¿Qué deseas crear?</h2>
+            <p class="splash__desc">Escoge el tipo de documento para comenzar.</p>
+            <div class="splash__actions" id="splash-actions">
+                <!-- Los botones se renderizan por JS desde /api/tipos-orden.
+                     Si el endpoint no responde, se dejan los defaults locales. -->
+                <button type="button" class="splash__btn" data-choose="cotizacion" data-id-order="1">
+                    <span class="splash__btn-icon" aria-hidden="true">📄</span>
+                    <span class="splash__btn-label">Cotización</span>
+                </button>
+                <button type="button" class="splash__btn" data-choose="factura" data-id-order="2">
+                    <span class="splash__btn-icon" aria-hidden="true">🧾</span>
+                    <span class="splash__btn-label">Factura</span>
+                </button>
+            </div>
+        </div>
+        <div class="splash__step" data-step="loading" hidden>
+            <div class="splash__spinner" aria-hidden="true"></div>
+            <p class="splash__loading-title">Estamos cargando todo</p>
+            <p class="splash__loading-desc" id="splash-loading-desc">para que puedas realizar tu cotización cómodamente.</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal__panel">
+        <div class="modal__header">
+            <h3 class="modal__title" id="modal-title" data-doc-word="preview-titulo">Vista previa de la cotización</h3>
+            <div class="modal__actions">
+                <div class="zoom-controls" role="group" aria-label="Zoom">
+                    <button type="button" class="zoom-btn" id="btn-zoom-out" aria-label="Alejar" title="Alejar">−</button>
+                    <button type="button" class="zoom-btn zoom-btn--reset" id="btn-zoom-reset" title="Ajustar al ancho">100%</button>
+                    <button type="button" class="zoom-btn" id="btn-zoom-in" aria-label="Acercar" title="Acercar">+</button>
+                </div>
+                <button type="button" class="btn" id="btn-download">↓ Descargar PDF</button>
+                <button type="button" class="modal__close" id="btn-close" aria-label="Cerrar">×</button>
+            </div>
+        </div>
+        <div class="modal__body">
+            <iframe id="preview" title="Cotización" scrolling="no"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    // =====================================================================
+    // Constantes / config
+    // =====================================================================
+    const fmt = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+    const itemsBody = document.getElementById('items-body');
+    const grandTotalEl = document.getElementById('grand-total');
+    const form = document.getElementById('quotation-form');
+    const errorEl = document.getElementById('form-error');
+    // Cache de nodos usados en recompute() (hot path).
+    const deliveryQtyEl   = document.getElementById('delivery_qty');
+    const deliveryPriceEl = document.getElementById('delivery_price');
+    const deliveryTotalEl = document.getElementById('delivery-total');
+    let deliveryOn = false;
+
+    // =====================================================================
+    // Utilidades genéricas + items / totales
+    // =====================================================================
+    function newRow(desc = '', size = '', qty = 1, price = 0) {
+        const row = document.createElement('div');
+        row.className = 'items__row';
+        row.innerHTML = `
+            <div class="idx">–</div>
+            <div>
+                <span class="cell-label">Descripción</span>
+                <input type="text" class="js-desc" placeholder="Descripción" required value="${desc}">
+            </div>
+            <div>
+                <span class="cell-label">Talla</span>
+                <input type="text" class="js-size" placeholder="—" value="${size}">
+            </div>
+            <div>
+                <span class="cell-label">Cantidad</span>
+                <input type="number" class="js-qty" min="1" step="1" inputmode="numeric" required value="${qty}">
+            </div>
+            <div>
+                <span class="cell-label">Precio unitario</span>
+                <input type="text" class="js-price" inputmode="numeric" required value="${price ? fmt.format(price) : '$ 0'}">
+            </div>
+            <div class="total js-total">$ 0</div>
+            <div><button type="button" class="btn-remove" title="Eliminar" aria-label="Eliminar">×</button></div>
+        `;
+        row.querySelector('.btn-remove').addEventListener('click', () => {
+            row.remove();
+            renumber();
+            recompute();
+        });
+        const priceInput = row.querySelector('.js-price');
+        priceInput.addEventListener('focus', () => {
+            const n = parsePrice(priceInput.value);
+            priceInput.value = n ? String(n) : '';
+        });
+        priceInput.addEventListener('blur', () => {
+            const n = parsePrice(priceInput.value);
+            priceInput.value = fmt.format(n);
+            recompute();
+        });
+        priceInput.addEventListener('input', recompute);
+        row.querySelector('.js-desc').addEventListener('input', recompute);
+        row.querySelector('.js-size').addEventListener('input', recompute);
+        row.querySelector('.js-qty').addEventListener('input', recompute);
+        itemsBody.appendChild(row);
+        renumber();
+        recompute();
+    }
+
+    function parsePrice(v) {
+        if (v == null) return 0;
+        const digits = String(v).replace(/[^\d]/g, '');
+        return digits ? parseInt(digits, 10) : 0;
+    }
+
+    function renumber() {
+        [...itemsBody.querySelectorAll('.items__row')].forEach((r, i) => {
+            r.querySelector('.idx').textContent = i + 1;
+        });
+    }
+
+    function recompute() {
+        let grand = 0;
+        itemsBody.querySelectorAll('.items__row').forEach(row => {
+            const q = parseFloat(row.querySelector('.js-qty').value) || 0;
+            const p = parsePrice(row.querySelector('.js-price').value);
+            const t = q * p;
+            row.querySelector('.js-total').textContent = fmt.format(t);
+            grand += t;
+        });
+        if (deliveryOn) {
+            const dq = parseFloat(deliveryQtyEl.value) || 0;
+            const dp = parsePrice(deliveryPriceEl.value);
+            const dt = dq * dp;
+            deliveryTotalEl.textContent = fmt.format(dt);
+            grand += dt;
+        }
+        currentGrandTotal = grand;
+        grandTotalEl.textContent = fmt.format(grand);
+    }
+
+    function collect() {
+        const items = [...itemsBody.querySelectorAll('.items__row')].map(row => ({
+            descripcion: row.querySelector('.js-desc').value.trim(),
+            talla: row.querySelector('.js-size').value.trim(),
+            cantidad: parseInt(row.querySelector('.js-qty').value, 10),
+            precioUnitario: parsePrice(row.querySelector('.js-price').value)
+        })).filter(it => it.descripcion.length > 0);
+
+        if (deliveryOn) {
+            items.push({
+                descripcion: 'Servicio de Domicilio',
+                talla: '',
+                cantidad: parseInt(deliveryQtyEl.value, 10) || 1,
+                precioUnitario: parsePrice(deliveryPriceEl.value)
+            });
+        }
+
+        return {
+            asesor: (function () {
+                const r = document.querySelector('input[name="advisor"]:checked');
+                if (!r) return null;
+                return { nombre: r.dataset.name, telefono: r.dataset.phone };
+            })(),
+            cliente: {
+                nombre: document.getElementById('cliente_nombre').value.trim(),
+                tipoIdentificacion: document.getElementById('cliente_tipo_id').value,
+                nit: document.getElementById('cliente_nit').value.trim(),
+                telefono: document.getElementById('cliente_telefono').value.trim(),
+                correo: document.getElementById('cliente_correo').value.trim(),
+                direccion: document.getElementById('cliente_direccion').value.trim()
+            },
+            numero: document.getElementById('numero').value.trim(),
+            fecha: document.getElementById('fecha').value,
+            observaciones: document.getElementById('observaciones').value.trim(),
+            items: items,
+            documentType: currentDocType
+        };
+    }
+
+    document.getElementById('add-item').addEventListener('click', () => newRow());
+    document.getElementById('btn-reset').addEventListener('click', (e) => {
+        e.preventDefault();
+        form.reset();
+        itemsBody.innerHTML = '';
+        newRow();
+        document.getElementById('fecha').valueAsDate = new Date();
+    });
+
+    // =====================================================================
+    // Catálogos (tipos orden) + estado de submit / descarga
+    // =====================================================================
+    const btnSubmit = document.getElementById('btn-submit');
+    let currentGrandTotal = 0;
+    // Info del cliente pendiente de persistir hasta que se descargue el PDF.
+    let pendingClientForOrder = null;
+    // Evita crear una orden duplicada si el usuario da varias veces "Descargar"
+    // sobre el mismo modal (misma cotización/factura).
+    let orderPersistedForCurrent = false;
+    // Mapa sigla → id de listtypeorder. Se pre-siembra con los defaults de la
+    // migración inicial (1=Cotización, 2=Factura) para que el front funcione
+    // aunque la BD esté dormida al arranque; el fetch del catálogo lo
+    // sobrescribe con lo que exista en listtypeorder.
+    const tipoOrdenIdBySigla = { cotizacion: 1, factura: 2 };
+    // Íconos por sigla conocida; para tipos nuevos venidos del catálogo se usa 📋.
+    const TIPO_ICONS = { cotizacion: '📄', factura: '🧾' };
+
+    // Normaliza "Cotización" → "cotizacion" para usarla como sigla estable.
+    function siglaFromLabel(s) {
+        return String(s || '').toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '');
+    }
+
+    // Consulta el catálogo activo de tipos de orden. Devuelve null si no se
+    // puede leer para que el llamador use los defaults locales.
+    async function loadTipoOrdenFromApi() {
+        try {
+            const r = await fetch('/api/tipos-orden', { cache: 'no-store' });
+            if (!r.ok) return null;
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0) return null;
+            return data.map(t => {
+                const sigla = siglaFromLabel(t.typeOrder) || String(t.id);
+                return {
+                    id: t.id,
+                    sigla: sigla,
+                    label: t.typeOrder,
+                    icon: TIPO_ICONS[sigla] || '📋'
+                };
+            });
+        } catch (_) { return null; }
+    }
+
+    function renderTipoOrdenChoices(actionsEl, items) {
+        actionsEl.innerHTML = '';
+        // Máx 3 por fila; repartimos parejo: 4→2+2, 5→3+2, 6→3+3, 7→3+3+1…
+        const n = items.length;
+        const rows = Math.max(1, Math.ceil(n / 3));
+        const cols = Math.max(1, Math.ceil(n / rows));
+        actionsEl.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+        items.forEach(it => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'splash__btn';
+            btn.dataset.choose = it.sigla;
+            btn.dataset.idOrder = String(it.id);
+            const icon = document.createElement('span');
+            icon.className = 'splash__btn-icon';
+            icon.setAttribute('aria-hidden', 'true');
+            icon.textContent = it.icon;
+            const label = document.createElement('span');
+            label.className = 'splash__btn-label';
+            label.textContent = it.label;
+            btn.appendChild(icon);
+            btn.appendChild(label);
+            actionsEl.appendChild(btn);
+            // Sobrescribimos el mapa por si el id difiere del default local.
+            tipoOrdenIdBySigla[it.sigla] = it.id;
+        });
+    }
+
+    function currentIdTypeOrder() {
+        return tipoOrdenIdBySigla[currentDocType]
+            ?? (currentDocType === 'factura' ? 2 : 1);
+    }
+
+    // Guarda la orden (cotización o factura) en la BD asociada al idClient
+    // recibido tras persistir el cliente. Best-effort.
+    async function saveOrderAsync(idClient) {
+        try {
+            const today = new Date();
+            const fmtDate = d => d.toISOString().slice(0, 10);
+            const effective = new Date(today);
+            effective.setDate(effective.getDate() + 15);
+
+            const numero = parseInt(document.getElementById('numero').value, 10);
+            if (!numero) return; // sin OrderNumber no persistimos
+
+            await fetch('/api/orders/guardarOrden', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idClient: idClient,
+                    totalOrderPrice: Math.round(currentGrandTotal),
+                    orderDate: fmtDate(today),
+                    effectiveDate: fmtDate(effective),
+                    idTypeOrder: currentIdTypeOrder(),
+                    orderNumber: numero
+                })
+            });
+            // Recalculamos el siguiente número para la próxima orden.
+            refreshOrderNumber();
+        } catch (_) { /* best-effort */ }
+    }
+
+    // Envía los datos del cliente al endpoint de guardado y, si retorna
+    // idClient, encadena el guardado de la orden. Best-effort.
+    async function saveClientAsync(cliente) {
+        try {
+            const tipoSel = document.getElementById('cliente_tipo_id');
+            const idTipo = parseInt(tipoSel.selectedOptions[0]?.dataset?.id, 10);
+            if (!idTipo) return; // fallback local sin id → no podemos persistir
+
+            const nitDigits = String(cliente.nit).replace(/\D/g, '');
+            const telDigits = String(cliente.telefono).replace(/\D/g, '');
+            if (!nitDigits) return;
+
+            const resp = await fetch('/api/clientes/guardarCliente', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    Name: cliente.nombre,
+                    IdTypeIdentification: idTipo,
+                    IdentificationNumber: nitDigits,
+                    Cellphone: telDigits || '0',
+                    Address: cliente.direccion || '',
+                    email: cliente.correo || ''
+                })
+            });
+            if (!resp.ok) return;
+            const body = await resp.json().catch(() => null);
+            const idClient = body?.idClient;
+            if (idClient) saveOrderAsync(idClient);
+        } catch (_) { /* best-effort */ }
+    }
+
+    // =====================================================================
+    // Submit / generación del PDF
+    // =====================================================================
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.hidden = true;
+
+        if (!validateForm()) return;
+
+        const payload = collect();
+        if (payload.items.length === 0) {
+            showToast('Agrega al menos un producto a la ' + currentDocType + '.', 'error');
+            return;
+        }
+
+        btnSubmit.classList.add('is-loading');
+        btnSubmit.disabled = true;
+        const originalLabel = btnSubmit.querySelector('.btn__label').textContent;
+        btnSubmit.querySelector('.btn__label').textContent = 'Generando…';
+
+        try {
+            const res = await fetch('/api/cotizacion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(await res.text());
+            const html = await res.text();
+            // Guardamos la última info del cliente para persistirla solo cuando
+            // el usuario descargue el PDF (así reeditar y regenerar no genera
+            // una orden nueva por cada ajuste).
+            pendingClientForOrder = payload.cliente;
+            orderPersistedForCurrent = false;
+            openModal(html, payload.numero);
+        } catch (err) {
+            showToast('Error generando la ' + currentDocType + ': ' + err.message, 'error');
+        } finally {
+            btnSubmit.classList.remove('is-loading');
+            btnSubmit.disabled = false;
+            btnSubmit.querySelector('.btn__label').textContent = originalLabel;
+        }
+    });
+
+    // ---------- Validación personalizada ----------
+    const REQUIRED_FIELDS = [
+        { id: 'cliente_nombre',    label: 'Nombre o razón social del cliente' },
+        { id: 'cliente_nit',       label: 'Número de identificación' },
+        { id: 'cliente_telefono',  label: 'Teléfono de contacto' },
+        { id: 'cliente_direccion', label: 'Dirección de entrega' },
+        { id: 'fecha',             label: 'Fecha' }
+    ];
+
+    function ensureHint(input) {
+        const field = input.closest('.field');
+        if (!field) return null;
+        let hint = field.querySelector('.field__hint');
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.className = 'field__hint';
+            field.appendChild(hint);
+        }
+        return hint;
+    }
+    function markInvalid(input, msg) {
+        const field = input.closest('.field');
+        if (!field) return;
+        field.classList.add('field--invalid');
+        const hint = ensureHint(input);
+        if (hint) hint.textContent = msg;
+        input.addEventListener('input', () => field.classList.remove('field--invalid'), { once: true });
+    }
+    function validateForm() {
+        document.querySelectorAll('.field--invalid').forEach(f => f.classList.remove('field--invalid'));
+        let firstInvalid = null;
+        let missing = [];
+
+        for (const { id, label } of REQUIRED_FIELDS) {
+            const el = document.getElementById(id);
+            if (!el.value.trim()) {
+                markInvalid(el, 'Este campo es obligatorio');
+                missing.push(label);
+                firstInvalid = firstInvalid || el;
+            }
+        }
+
+        // Validar asesor seleccionado
+        const advisorSelected = document.querySelector('input[name="advisor"]:checked');
+        const advisorPicker = document.querySelector('.advisor-picker');
+        if (!advisorSelected) {
+            advisorPicker.classList.add('field--invalid');
+            missing.push('Asesor de contacto');
+            const firstRadio = advisorPicker.querySelector('input[type="radio"]');
+            firstInvalid = firstInvalid || firstRadio;
+            document.querySelectorAll('input[name="advisor"]').forEach(r => {
+                r.addEventListener('change', () => advisorPicker.classList.remove('field--invalid'), { once: true });
+            });
+        } else {
+            advisorPicker.classList.remove('field--invalid');
+        }
+        const correo = document.getElementById('cliente_correo');
+        if (correo.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.value.trim())) {
+            markInvalid(correo, 'Ingresa un correo válido');
+            firstInvalid = firstInvalid || correo;
+        }
+        if (deliveryOn) {
+            const dp = document.getElementById('delivery_price');
+            if (parsePrice(dp.value) <= 0) {
+                markInvalid(dp, 'El precio del domicilio es obligatorio');
+                firstInvalid = firstInvalid || dp;
+                missing.push('Precio del domicilio');
+            }
+        }
+        if (firstInvalid) {
+            firstInvalid.focus();
+            const msg = missing.length === 1
+                ? `Falta completar: ${missing[0]}.`
+                : missing.length > 1
+                    ? `Faltan ${missing.length} campos por completar.`
+                    : 'Revisa los campos marcados.';
+            showToast(msg, 'error');
+            return false;
+        }
+        return true;
+    }
+
+    // =====================================================================
+    // Toast + alerta centrada
+    // =====================================================================
+    const toastEl = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-msg');
+    const toastIcon = document.getElementById('toast-icon');
+    let toastTimer = null;
+    function showToast(message, type = 'error') {
+        clearTimeout(toastTimer);
+        toastMsg.textContent = message;
+        toastEl.classList.remove('toast--error', 'toast--success');
+        if (type === 'error') { toastEl.classList.add('toast--error'); toastIcon.textContent = '⚠'; }
+        else if (type === 'success') { toastEl.classList.add('toast--success'); toastIcon.textContent = '✓'; }
+        else { toastIcon.textContent = 'ℹ'; }
+        toastEl.dataset.show = 'true';
+        toastTimer = setTimeout(() => { toastEl.dataset.show = 'false'; }, 4000);
+    }
+
+    // Alerta centrada minimalista (usada al autocompletar cliente).
+    const centerAlertEl = document.getElementById('center-alert');
+    const centerAlertTitle = document.getElementById('center-alert-title');
+    let centerAlertTimer = null;
+    function showCenterAlert(title) {
+        if (!centerAlertEl) return;
+        clearTimeout(centerAlertTimer);
+        if (title) centerAlertTitle.textContent = title;
+        centerAlertEl.dataset.show = 'true';
+        centerAlertEl.setAttribute('aria-hidden', 'false');
+        centerAlertTimer = setTimeout(() => {
+            centerAlertEl.dataset.show = 'false';
+            centerAlertEl.setAttribute('aria-hidden', 'true');
+        }, 1400);
+    }
+    if (centerAlertEl) {
+        centerAlertEl.addEventListener('click', () => {
+            centerAlertEl.dataset.show = 'false';
+            centerAlertEl.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    // =====================================================================
+    // Modal de preview + zoom
+    // =====================================================================
+    const modal = document.getElementById('modal');
+    const preview = document.getElementById('preview');
+    let currentNumero = '';
+    let currentHtml = '';
+
+    const DOC_WIDTH = 900; // ancho fijo del documento A4 renderizado
+    let userZoom = 1;      // 1 = ajustado al ancho; >1 acerca (aparece scroll horizontal)
+    const ZOOM_MIN = 0.5;
+    const ZOOM_MAX = 3;
+    const ZOOM_STEP = 0.2;
+
+    function fitPreviewToViewport() {
+        const doc = preview.contentDocument;
+        const win = preview.contentWindow;
+        if (!doc || !win || !doc.body) return;
+
+        const containerWidth = preview.parentElement.clientWidth;
+        if (!containerWidth) return;
+
+        // Escala base: cabe en el ancho disponible; nunca amplía por sí sola.
+        const baseScale = Math.min(1, containerWidth / DOC_WIDTH);
+        const scale = baseScale * userZoom;
+
+        // Restablecer antes de medir el alto natural del documento.
+        doc.documentElement.style.overflow = 'visible';
+        doc.documentElement.style.height = 'auto';
+        doc.body.style.transformOrigin = 'top left';
+        doc.body.style.transform = 'none';
+        doc.body.style.width = DOC_WIDTH + 'px';
+        doc.body.style.margin = '0';
+        doc.body.style.height = 'auto';
+
+        const naturalHeight = doc.body.scrollHeight;
+
+        // Aplicar escala real.
+        doc.body.style.transform = 'scale(' + scale + ')';
+        doc.body.style.height = naturalHeight + 'px';
+
+        // Tamaño escalado real; el iframe pasa a ocupar exactamente eso para que
+        // TODO el scroll (vertical y horizontal) lo maneje el modal__body y no
+        // haya un scroll interno del iframe que "atrape" el gesto.
+        const scaledWidth  = Math.ceil(DOC_WIDTH * scale);
+        const scaledHeight = Math.ceil(naturalHeight * scale);
+        doc.documentElement.style.width  = scaledWidth + 'px';
+        doc.documentElement.style.height = scaledHeight + 'px';
+        preview.style.width  = scaledWidth + 'px';
+        preview.style.height = scaledHeight + 'px';
+
+        // El iframe no debe interceptar wheel/touch: modal__body maneja todo.
+        doc.documentElement.style.overflow = 'hidden';
+        doc.body.style.overflow = 'hidden';
+    }
+
+    // Restaurar layout completo al imprimir (evita imprimir la versión escalada).
+    function unfitForPrint() {
+        const doc = preview.contentDocument;
+        if (!doc || !doc.body) return;
+        doc.documentElement.style.overflow = '';
+        doc.documentElement.style.height = '';
+        doc.documentElement.style.width = '';
+        doc.body.style.transform = '';
+        doc.body.style.transformOrigin = '';
+        doc.body.style.width = '';
+        doc.body.style.height = '';
+        doc.body.style.margin = '';
+        doc.body.style.overflow = '';
+        preview.style.height = '';
+        preview.style.width = '';
+    }
+
+    // ---------- Zoom del preview ----------
+    function updateZoomLabel() {
+        const btn = document.getElementById('btn-zoom-reset');
+        if (btn) btn.textContent = Math.round(userZoom * 100) + '%';
+    }
+    function setZoom(next) {
+        userZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, next));
+        updateZoomLabel();
+        fitPreviewToViewport();
+    }
+    document.getElementById('btn-zoom-in').addEventListener('click',    () => setZoom(userZoom + ZOOM_STEP));
+    document.getElementById('btn-zoom-out').addEventListener('click',   () => setZoom(userZoom - ZOOM_STEP));
+    document.getElementById('btn-zoom-reset').addEventListener('click', () => setZoom(1));
+
+    preview.addEventListener('load', () => {
+        // Damos un tick para que fuentes/imágenes reflowen antes de medir.
+        requestAnimationFrame(() => requestAnimationFrame(fitPreviewToViewport));
+    });
+
+    window.addEventListener('resize', () => {
+        if (modal.hasAttribute('open')) fitPreviewToViewport();
+    });
+
+    function openModal(html, numero) {
+        currentNumero = numero || currentDocType;
+        currentHtml = html;
+        userZoom = 1;
+        updateZoomLabel();
+        preview.srcdoc = html;
+        modal.setAttribute('open', '');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.removeAttribute('open');
+        document.body.style.overflow = '';
+        preview.srcdoc = '';
+        currentHtml = '';
+    }
+    document.getElementById('btn-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.hasAttribute('open')) closeModal(); });
+
+    // =====================================================================
+    // Tipo de documento (cotización | factura) + splash inicial
+    // =====================================================================
+    let currentDocType = 'cotizacion'; // se define en el splash inicial
+
+    const DOC_WORDS = {
+        'titulo-pagina':      { cotizacion: 'Nueva cotización — Dotaciones Zambrano', factura: 'Nueva factura — Dotaciones Zambrano' },
+        'titulo-h1':          { cotizacion: 'Nueva cotización', factura: 'Nueva factura' },
+        'descripcion-form':   { cotizacion: 'Complete los datos, agregue los productos que necesite y genere la cotización.',
+                                factura:    'Complete los datos, agregue los productos que necesite y genere la factura.' },
+        'descripcion-asesor': { cotizacion: 'Selecciona el asesor cuyo número aparecerá en la cotización.',
+                                factura:    'Selecciona el asesor cuyo número aparecerá en la factura.' },
+        'datos-titulo':       { cotizacion: 'Datos de la cotización', factura: 'Datos de la factura' },
+        'numero-label':       { cotizacion: 'cotización', factura: 'factura' },
+        'btn-generar':        { cotizacion: 'Generar cotización', factura: 'Generar factura' },
+        'preview-titulo':     { cotizacion: 'Vista previa de la cotización', factura: 'Vista previa de la factura' }
+    };
+
+    function applyDocType(type) {
+        currentDocType = (type === 'factura') ? 'factura' : 'cotizacion';
+        document.documentElement.setAttribute('data-doc-type', currentDocType);
+        document.querySelectorAll('[data-doc-word]').forEach(el => {
+            const key = el.dataset.docWord;
+            const entry = DOC_WORDS[key];
+            if (!entry) return;
+            if (el.tagName === 'TITLE') document.title = entry[currentDocType];
+            else el.textContent = entry[currentDocType];
+        });
+    }
+
+    // ---------- Splash inicial: escoger tipo + esperar a la BD ----------
+    (() => {
+        const splash    = document.getElementById('splash');
+        const stepChoose  = splash.querySelector('[data-step="choose"]');
+        const stepLoading = splash.querySelector('[data-step="loading"]');
+        const loadingDesc = document.getElementById('splash-loading-desc');
+        const actionsEl   = document.getElementById('splash-actions');
+        if (!splash) return;
+
+        // Bloquea scroll del fondo mientras el splash está visible.
+        document.body.style.overflow = 'hidden';
+
+        const hideSplash = () => {
+            splash.classList.add('is-hiding');
+            setTimeout(() => {
+                splash.hidden = true;
+                document.body.style.overflow = '';
+            }, 260);
+        };
+
+        const waitForDb = async () => {
+            const started = Date.now();
+            const MAX_MS  = 60000;   // 60s como techo
+            const STEP_MS = 2000;
+            while (Date.now() - started < MAX_MS) {
+                try {
+                    const r = await fetch('/api/db-status', { cache: 'no-store' });
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d && d.ready) return true;
+                    }
+                } catch (_) { /* seguimos esperando */ }
+                await new Promise(res => setTimeout(res, STEP_MS));
+            }
+            return false;
+        };
+
+        // Intento render dinámico desde el catálogo. Si el endpoint no
+        // responde (BD dormida), los botones default del HTML permanecen.
+        loadTipoOrdenFromApi().then(items => {
+            if (items && items.length) renderTipoOrdenChoices(actionsEl, items);
+        });
+
+        // Reabre el splash en el paso de "elegir", reseteando visibilidades
+        // y refrescando el catálogo por si la BD ya despertó.
+        const openSplash = () => {
+            splash.classList.remove('is-hiding');
+            splash.hidden = false;
+            stepLoading.hidden = true;
+            stepChoose.hidden = false;
+            document.body.style.overflow = 'hidden';
+            loadTipoOrdenFromApi().then(items => {
+                if (items && items.length) renderTipoOrdenChoices(actionsEl, items);
+            });
+        };
+        // Botón fijo top-right para cambiar de tipo sin recargar la página.
+        const btnSwitch = document.getElementById('btn-change-doc-type');
+        if (btnSwitch) btnSwitch.addEventListener('click', openSplash);
+
+        // Delegado: sobrevive al re-render de los botones desde el API.
+        actionsEl.addEventListener('click', async (ev) => {
+            const btn = ev.target.closest('[data-choose]');
+            if (!btn) return;
+            const type  = btn.dataset.choose;
+            const idOrd = parseInt(btn.dataset.idOrder, 10);
+            if (idOrd) tipoOrdenIdBySigla[type] = idOrd;
+            applyDocType(type);
+            // Ya conocemos el tipo → traemos el próximo OrderNumber (o
+            // habilitamos captura manual si la BD no responde).
+            refreshOrderNumber();
+
+            stepChoose.hidden = true;
+            stepLoading.hidden = false;
+            loadingDesc.textContent = (type === 'factura')
+                ? 'para que puedas realizar tu factura cómodamente.'
+                : 'para que puedas realizar tu ' + (btn.querySelector('.splash__btn-label')?.textContent || 'orden').toLowerCase() + ' cómodamente.';
+
+            await waitForDb();
+            hideSplash();
+        });
+    })();
+
+    // =====================================================================
+    // Próximo OrderNumber por tipo (catálogo)
+    // =====================================================================
+    // Se dispara al elegir tipo en el splash, tras descargar el PDF y al
+    // resetear el formulario. Cada tipo (cotización/factura) tiene su propia
+    // serie: max(OrderNumber) de la orden más reciente de ese IdTypeOrder + 1.
+    let numeroManualEnabled = false;
+    async function refreshOrderNumber() {
+        const hidden  = document.getElementById('numero');
+        const display = document.getElementById('numero_display')
+                     || document.getElementById('numero_manual');
+        if (!hidden) return;
+
+        const enableManual = () => {
+            if (numeroManualEnabled) return;
+            numeroManualEnabled = true;
+            const displayEl = document.getElementById('numero_display');
+            if (!displayEl) return;
+            const wrap = displayEl.parentElement;
+            displayEl.remove();
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = 'numero_manual';
+            input.className = 'quotation-number__input';
+            input.placeholder = 'Ej. 3721';
+            input.required = true;
+            input.autocomplete = 'off';
+            input.inputMode = 'numeric';
+            input.addEventListener('input', () => { hidden.value = input.value.trim(); });
+            wrap.appendChild(input);
+            REQUIRED_FIELDS.push({ id: 'numero_manual', label: 'Número de ' + currentDocType });
+            input.focus();
+        };
+
+        const idTypeOrder = currentIdTypeOrder();
+        try {
+            const r = await fetch('/api/orders/proximo-numero?idTypeOrder=' + idTypeOrder,
+                                  { cache: 'no-store' });
+            if (!r.ok) { enableManual(); return; }
+            const data = await r.json();
+            if (data && data.numero != null) {
+                hidden.value = String(data.numero);
+                if (numeroManualEnabled) {
+                    const inp = document.getElementById('numero_manual');
+                    if (inp) inp.value = String(data.numero);
+                } else {
+                    const disp = document.getElementById('numero_display');
+                    if (disp) disp.textContent = String(data.numero);
+                }
+            } else {
+                enableManual();
+            }
+        } catch (_) { enableManual(); }
+    }
+
+    // =====================================================================
+    // Autocompletar cliente (busca por tipo + número de documento)
+    // =====================================================================
+    (() => {
+        const nit    = document.getElementById('cliente_nit');
+        const tipo   = document.getElementById('cliente_tipo_id');
+        const nombre = document.getElementById('cliente_nombre');
+        const tel    = document.getElementById('cliente_telefono');
+        const dir    = document.getElementById('cliente_direccion');
+        const correo = document.getElementById('cliente_correo');
+        if (!nit || !tipo) return;
+
+        let timer = null;
+        let inFlight = null;
+        let lastAlertKey = '';   // sigla|numero de la última alerta mostrada
+
+        const lookup = async () => {
+            const numero = nit.value.trim();
+            const sigla  = tipo.value.trim();
+            if (!numero || !sigla || !/^\d+$/.test(numero)) return;
+
+            const url = `/api/clientes/buscar?sigla=${encodeURIComponent(sigla)}&numero=${encodeURIComponent(numero)}`;
+            const ctrl = new AbortController();
+            if (inFlight) inFlight.abort();
+            inFlight = ctrl;
+            try {
+                const r = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+                if (!r.ok) return;
+                const data = await r.json();
+                if (!data || !data.found) return;
+
+                const changed = [];
+                const fill = (el, value) => {
+                    if (!el || value == null || value === '') return;
+                    const next = String(value);
+                    if (el.value === next) return;   // ya coincide, no marcar
+                    el.value = next;
+                    changed.push(el);
+                };
+                fill(nombre, data.nombre);
+                fill(tel,    data.telefono);
+                fill(dir,    data.direccion);
+                fill(correo, data.correo);
+
+                changed.forEach(el => {
+                    el.classList.remove('field-flash');
+                    void el.offsetWidth; // reinicia la animación
+                    el.classList.add('field-flash');
+                    setTimeout(() => el.classList.remove('field-flash'), 1700);
+                });
+
+                // Evita reabrir la alerta cuando el blur/change vuelve a disparar
+                // el mismo lookup: solo se muestra si cambió el tipo o el número.
+                const key = sigla + '|' + numero;
+                if (key !== lastAlertKey) {
+                    lastAlertKey = key;
+                    showCenterAlert('Cliente encontrado');
+                }
+            } catch (_) { /* ignore */ }
+        };
+
+        const schedule = () => {
+            clearTimeout(timer);
+            timer = setTimeout(lookup, 400);
+        };
+
+        nit.addEventListener('input', schedule);
+        nit.addEventListener('blur',  lookup);
+        tipo.addEventListener('change', lookup);
+    })();
+
+    // =====================================================================
+    // Catálogo: tipos de identificación (poblar select "Tipo Doc")
+    // =====================================================================
+    // Si el endpoint devuelve [], se conservan las opciones hardcodeadas del HTML.
+    (async () => {
+        const sel = document.getElementById('cliente_tipo_id');
+        if (!sel) return;
+        try {
+            const resp = await fetch('/api/tipos-identificacion', { cache: 'no-store' });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (!Array.isArray(data) || data.length === 0) return;
+
+            const prev = sel.value;
+            sel.innerHTML = '';
+            data.forEach(t => {
+                const sigla = (t.TypeIdentification || t.typeIdentification || '').trim();
+                if (!sigla) return;
+                const opt = document.createElement('option');
+                opt.value = sigla;
+                opt.textContent = sigla;
+                if (t.id != null) opt.dataset.id = String(t.id);
+                const desc = t.Description || t.description;
+                if (desc) opt.title = desc;
+                sel.appendChild(opt);
+            });
+            if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+        } catch (_) { /* red caída → nos quedamos con el fallback hardcodeado */ }
+    })();
+
+    // =====================================================================
+    // Descarga (best-effort guardar cliente + orden) + branch iOS
+    // =====================================================================
+    // Detección de iOS (Safari en iPhone/iPad)
+    const isIOS = /iP(hone|ad|od)/.test(navigator.platform) ||
+                  (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+
+    document.getElementById('btn-download').addEventListener('click', () => {
+        // Persistir cliente + orden solo cuando el usuario descarga.
+        // Idempotente por modal: no crea otra orden aunque se descargue varias veces.
+        if (pendingClientForOrder && !orderPersistedForCurrent) {
+            orderPersistedForCurrent = true;
+            saveClientAsync(pendingClientForOrder);
+        }
+        if (isIOS) {
+            // En iOS Safari, imprimir desde un <iframe> con el body escalado hace que
+            // el PDF salga con la cotización ocupando solo una esquina del A4.
+            // Solución: abrir el HTML en una ventana nueva a tamaño real y desde ahí
+            // usar el diálogo nativo de impresión / Guardar como PDF.
+            const w = window.open('', '_blank');
+            if (!w) {
+                showToast('Habilita ventanas emergentes para descargar el PDF.', 'error');
+                return;
+            }
+            // Inyectar el HTML con título correcto para el nombre del archivo
+            const withTitle = currentHtml.replace(
+                /<title>[^<]*<\/title>/i,
+                '<title>' + (currentDocType === 'factura' ? 'Factura' : 'Cotizacion') + '-' + currentNumero + '</title>'
+            );
+            w.document.open();
+            w.document.write(withTitle);
+            w.document.close();
+            // Dar tiempo a que el logo y fuentes carguen antes de disparar el print
+            w.addEventListener('load', () => {
+                setTimeout(() => {
+                    w.focus();
+                    w.print();
+                }, 400);
+            });
+            return;
+        }
+
+        // Escritorio / Android: imprimir directo desde el iframe funciona bien
+        const win = preview.contentWindow;
+        if (!win) return;
+        try {
+            win.document.title = (currentDocType === 'factura' ? 'Factura' : 'Cotizacion') + '-' + currentNumero;
+        } catch (_) {}
+        unfitForPrint();
+        win.focus();
+        win.print();
+        requestAnimationFrame(() => requestAnimationFrame(fitPreviewToViewport));
+    });
+
+    // =====================================================================
+    // Init + delivery service
+    // =====================================================================
+    // init
+    document.getElementById('fecha').valueAsDate = new Date();
+    newRow();
+
+    // ---------- Delivery service ----------
+    const deliveryFields = document.getElementById('delivery-fields');
+    const deliveryPrice = document.getElementById('delivery_price');
+    const btnYes = document.getElementById('delivery-yes');
+    const btnNo  = document.getElementById('delivery-no');
+
+    function setDelivery(on) {
+        deliveryOn = on;
+        btnYes.classList.toggle('is-active', on);
+        btnNo.classList.toggle('is-active', !on);
+        document.getElementById('delivery-toggle').dataset.value = on ? 'si' : 'no';
+        deliveryFields.hidden = !on;
+        recompute();
+    }
+    btnYes.addEventListener('click', () => setDelivery(true));
+    btnNo.addEventListener('click',  () => setDelivery(false));
+
+    document.getElementById('delivery_qty').addEventListener('input', recompute);
+    deliveryPrice.addEventListener('input', recompute);
+    deliveryPrice.addEventListener('focus', () => {
+        const n = parsePrice(deliveryPrice.value);
+        deliveryPrice.value = n ? String(n) : '';
+    });
+    deliveryPrice.addEventListener('blur', () => {
+        const n = parsePrice(deliveryPrice.value);
+        deliveryPrice.value = fmt.format(n);
+        recompute();
+    });
+})();
+</script>
+</body>
+</html>

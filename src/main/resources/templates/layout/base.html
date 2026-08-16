@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header(empresa)" class="doc-header">
+    <div class="doc-header__brand">
+        <img th:if="${logoDataUri != null}" th:src="${logoDataUri}" alt="Logo" class="doc-header__logo-img">
+        <div th:unless="${logoDataUri != null}" class="doc-header__logo" aria-hidden="true">DZ</div>
+        <div class="doc-header__company">
+            <h1 class="doc-header__name" th:text="${empresa.name}">Empresa</h1>
+            <p class="doc-header__meta">
+                <span th:text="${empresa.nit}">NIT</span>
+                <span class="dot">•</span>
+                <span>Tel. <span th:text="${empresa.phone}">Tel</span></span>
+                <span class="dot">•</span>
+                <span th:text="${empresa.city}">Ciudad</span>
+            </p>
+        </div>
+    </div>
+</header>
+
+<footer th:fragment="footer(empresa)" class="doc-footer">
+    <div class="doc-footer__row">
+        <span th:text="${empresa.name}">Empresa</span>
+        <span class="dot">•</span>
+        <span th:text="${empresa.nit}">NIT</span>
+        <span class="dot">•</span>
+        <span>Tel. <span th:text="${empresa.phone}">Tel</span></span>
+        <span class="dot">•</span>
+        <span th:text="${empresa.city}">Ciudad</span>
+    </div>
+    <p class="doc-footer__legal" th:text="'Este documento es una ' + ${docTitleLower} + ' sin valor tributario.'">Este documento es una cotización sin valor tributario.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Blueprint de Render — crea el servicio automáticamente desde este repo.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: automatic-factus
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true

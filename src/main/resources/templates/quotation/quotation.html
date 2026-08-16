@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${docTitle} + ' ' + ${numero_cotizacion} + ' — ' + ${empresa.name}">Cotización</title>
+    <style th:replace="~{quotation/_styles :: styles}"></style>
+</head>
+<body>
+
+<main class="page">
+    <article class="quotation">
+
+        <header th:replace="~{layout/base :: header(${empresa})}"></header>
+
+        <section class="doc-title">
+            <div>
+                <p class="doc-title__eyebrow">Documento comercial</p>
+                <h2 class="doc-title__text" th:text="${docTitle}">Cotización</h2>
+            </div>
+            <div class="doc-title__meta">
+                <dl>
+                    <dt>N.º</dt><dd th:text="${numero_cotizacion}">0000</dd>
+                    <dt>Fecha</dt><dd th:text="${fecha}">—</dd>
+                    <dt>Vigencia hasta</dt><dd th:text="${vigencia}">—</dd>
+                </dl>
+            </div>
+        </section>
+
+        <section class="parties">
+            <div class="party">
+                <h3 class="party__label">Emisor</h3>
+                <p class="party__name" th:text="${empresa.name}">Empresa</p>
+                <p class="party__line" th:text="${empresa.nit}">NIT</p>
+                <p class="party__line">Tel. <span th:text="${empresa.phone}">—</span></p>
+                <p class="party__line" th:text="${empresa.city}">Ciudad</p>
+            </div>
+            <div class="party">
+                <h3 class="party__label">Cliente</h3>
+                <p class="party__name" th:text="${cliente.name}">Cliente</p>
+                <p class="party__line" th:if="${cliente.nit != null and !#strings.isEmpty(cliente.nit)}">
+                    <span th:text="${cliente.idType != null and !#strings.isEmpty(cliente.idType) ? cliente.idType : 'ID'}">ID</span>
+                    <span th:text="${cliente.nit}">—</span>
+                </p>
+                <p class="party__line" th:if="${cliente.phone != null and !#strings.isEmpty(cliente.phone)}">
+                    Tel. <span th:text="${cliente.phone}">—</span>
+                </p>
+                <p class="party__line" th:if="${cliente.email != null and !#strings.isEmpty(cliente.email)}"
+                   th:text="${cliente.email}">correo</p>
+                <p class="party__line" th:if="${cliente.address != null and !#strings.isEmpty(cliente.address)}"
+                   th:text="${cliente.address}">dirección</p>
+            </div>
+        </section>
+
+        <section class="items">
+            <table class="items__table" aria-label="Detalle de productos">
+                <thead>
+                <tr>
+                    <th class="col-idx">#</th>
+                    <th class="col-desc">Descripción</th>
+                    <th class="col-size">Talla</th>
+                    <th class="col-qty">Cantidad</th>
+                    <th class="col-price">Precio unitario</th>
+                    <th class="col-total">Precio total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p, iter : ${productos}">
+                    <td class="col-idx" th:text="${iter.count}">1</td>
+                    <td class="col-desc" th:text="${p.descripcion}">Descripción</td>
+                    <td class="col-size" th:text="${p.talla != null ? p.talla : '—'}">—</td>
+                    <td class="col-qty" th:text="${p.cantidad}">0</td>
+                    <td class="col-price" th:text="${p.precioUnitario}">$0</td>
+                    <td class="col-total" th:text="${p.precioTotal}">$0</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="totals">
+            <div class="totals__box">
+                <div class="totals__row">
+                    <span class="totals__label">Subtotal</span>
+                    <span class="totals__value" th:text="${subtotal}">$0</span>
+                </div>
+                <div class="totals__row totals__row--grand">
+                    <span class="totals__label">Total</span>
+                    <span class="totals__value" th:text="${total}">$0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="terms">
+            <div th:if="${observaciones != null and !#strings.isEmpty(observaciones)}" class="terms__notes">
+                <h3 class="terms__title">Observaciones</h3>
+                <p th:text="${observaciones}"></p>
+            </div>
+            <h3 class="terms__title" th:classappend="${observaciones != null and !#strings.isEmpty(observaciones)} ? 'terms__title--spaced' : ''">Condiciones comerciales</h3>
+            <ul class="terms__list">
+                <li>Precios expresados en pesos colombianos (COP).</li>
+                <li>Vigencia de la oferta hasta: <strong th:text="${vigencia}">—</strong>.</li>
+                <li>Forma de pago: a convenir con el cliente.</li>
+                <li>Tiempo de entrega: sujeto a disponibilidad de inventario.</li>
+            </ul>
+        </section>
+
+        <footer th:replace="~{layout/base :: footer(${empresa})}"></footer>
+    </article>
+</main>
+
+</body>
+</html>
