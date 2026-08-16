@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.automaticfactus.model.SaveResult;
 import com.automaticfactus.service.OrdersService;
 
-import Dtos.RequestOrders;
+import com.automaticfactus.dtos.RequestOrders;
 
 @RestController
 @RequestMapping("/api/orders")

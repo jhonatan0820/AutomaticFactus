@@ -4,7 +4,7 @@ import com.automaticfactus.entities.OrderEntity;
 import com.automaticfactus.model.SaveResult;
 import com.automaticfactus.repositories.OrderRepository;
 
-import Dtos.RequestOrders;
+import com.automaticfactus.dtos.RequestOrders;
 import org.springframework.stereotype.Service;
 
 @Service

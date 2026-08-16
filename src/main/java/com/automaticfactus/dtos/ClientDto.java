@@ -1,4 +1,4 @@
-package Dtos;
+package com.automaticfactus.dtos;
 
 import com.automaticfactus.entities.ClientEntity;
 

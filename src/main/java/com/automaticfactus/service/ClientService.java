@@ -2,8 +2,8 @@ package com.automaticfactus.service;
 import com.automaticfactus.entities.ClientEntity;
 import com.automaticfactus.model.SaveResult;
 import com.automaticfactus.repositories.ClientRepository;
-import Dtos.ClientDto;
-import Dtos.RequestClient;
+import com.automaticfactus.dtos.ClientDto;
+import com.automaticfactus.dtos.RequestClient;
 
 import org.springframework.stereotype.Service;
 import java.util.Optional;

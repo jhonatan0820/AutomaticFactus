@@ -2,8 +2,8 @@ package com.automaticfactus.controller;
 
 import com.automaticfactus.service.ClientService;
 
-import Dtos.ClientDto;
-import Dtos.RequestClient;
+import com.automaticfactus.dtos.ClientDto;
+import com.automaticfactus.dtos.RequestClient;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

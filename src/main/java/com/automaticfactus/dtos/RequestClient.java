@@ -1,4 +1,4 @@
-package Dtos;
+package com.automaticfactus.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
