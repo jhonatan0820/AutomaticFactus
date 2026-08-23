@@ -7,23 +7,14 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - name: Deploy to Homelab
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.HOMELAB_HOST }}
-          username: ${{ secrets.HOMELAB_USER }}
-          key: ${{ secrets.HOMELAB_SSH_KEY }}
-          script: |
-            set -e
-
-            cd /opt/homelab/compose/apps/automatic-factus
-
-            git pull origin main
-
-            docker compose build
-            docker compose up -d
-
-            docker image prune -f
+      - name: Deploy AutomaticFactus
+        run: |
+          set -e
+          cd /opt/homelab/compose/apps/automatic-factus
+          git pull origin main
+          docker compose build
+          docker compose up -d
+          docker image prune -f
