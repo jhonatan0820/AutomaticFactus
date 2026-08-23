@@ -29,11 +29,11 @@ jobs:
           docker compose build
           docker compose up -d
 
-      - name: Health check
+       - name: Health check
         id: healthcheck
         continue-on-error: true
         run: |
-          /opt/homelab/backups/healthcheck-automatic-factus.sh
+          curl -fsS https://automaticfactus.dotacioneszambrano.com/health-NO-EXISTE
 
       - name: Rollback if health check fails
         if: steps.healthcheck.outcome == 'failure'
