@@ -15,6 +15,12 @@ jobs:
           set -e
           /opt/homelab/backups/backup-automatic-factus.sh
 
+          BACKUP_DIR=$(ls -1dt /opt/homelab/backups/automatic-factus/*/ | head -n 1)
+          BACKUP_NAME=$(basename "$BACKUP_DIR")
+
+          echo "Backup creado: $BACKUP_NAME"
+          echo "BACKUP_NAME=$BACKUP_NAME" >> "$GITHUB_ENV"
+
       - name: Deploy AutomaticFactus
         run: |
           set -e
@@ -24,10 +30,35 @@ jobs:
           docker compose up -d
 
       - name: Health check
+        id: healthcheck
+        continue-on-error: true
+        run: |
+          /opt/homelab/backups/healthcheck-automatic-factus.sh
+
+      - name: Rollback if health check fails
+        if: steps.healthcheck.outcome == 'failure'
+        run: |
+          set -e
+          echo "Health check falló."
+          echo "Ejecutando rollback al backup: $BACKUP_NAME"
+
+          AUTO_ROLLBACK=true \
+          /opt/homelab/backups/rollback-automatic-factus.sh "$BACKUP_NAME"
+
+      - name: Verify rollback
+        if: steps.healthcheck.outcome == 'failure'
         run: |
           set -e
           /opt/homelab/backups/healthcheck-automatic-factus.sh
 
+      - name: Fail deployment after rollback
+        if: steps.healthcheck.outcome == 'failure'
+        run: |
+          echo "El nuevo deploy no pasó el health check."
+          echo "La aplicación fue restaurada a la versión anterior."
+          exit 1
+
       - name: Cleanup Docker images
+        if: steps.healthcheck.outcome == 'success'
         run: |
           docker image prune -f
