@@ -13,6 +13,7 @@ jobs:
       - name: Backup current version
         run: |
           set -e
+
           /opt/homelab/backups/backup-automatic-factus.sh
 
           BACKUP_DIR=$(ls -1dt /opt/homelab/backups/automatic-factus/*/ | head -n 1)
@@ -24,21 +25,23 @@ jobs:
       - name: Deploy AutomaticFactus
         run: |
           set -e
+
           cd /opt/homelab/compose/apps/automatic-factus
           git pull origin main
           docker compose build
           docker compose up -d
 
-       - name: Health check
+      - name: Health check
         id: healthcheck
         continue-on-error: true
         run: |
-          curl -fsS https://automaticfactus.dotacioneszambrano.com/health-NO-EXISTE
+          /opt/homelab/backups/healthcheck-automatic-factus.sh
 
       - name: Rollback if health check fails
         if: steps.healthcheck.outcome == 'failure'
         run: |
           set -e
+
           echo "Health check falló."
           echo "Ejecutando rollback al backup: $BACKUP_NAME"
 
@@ -49,6 +52,7 @@ jobs:
         if: steps.healthcheck.outcome == 'failure'
         run: |
           set -e
+
           /opt/homelab/backups/healthcheck-automatic-factus.sh
 
       - name: Fail deployment after rollback
