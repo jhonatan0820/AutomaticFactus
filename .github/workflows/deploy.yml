@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-#backups automatico
+
     steps:
       - name: Backup current version
         run: |
@@ -22,4 +22,12 @@ jobs:
           git pull origin main
           docker compose build
           docker compose up -d
+
+      - name: Health check
+        run: |
+          set -e
+          /opt/homelab/backups/healthcheck-automatic-factus.sh
+
+      - name: Cleanup Docker images
+        run: |
           docker image prune -f
