@@ -58,6 +58,20 @@ jobs:
           echo "La aplicación fue restaurada a la versión anterior."
           exit 1
 
+            - name: Register deployed version
+        if: steps.healthcheck.outcome == 'success'
+        run: |
+          set -e
+
+          cd /opt/homelab/compose/apps/automatic-factus
+
+          COMMIT=$(git rev-parse HEAD)
+
+          echo "$COMMIT" > \
+            /opt/homelab/backups/automatic-factus/current-deployed-commit
+
+          echo "Versión desplegada registrada: $COMMIT"
+
       - name: Cleanup Docker images
         if: steps.healthcheck.outcome == 'success'
         run: |
