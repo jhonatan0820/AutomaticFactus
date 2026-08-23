@@ -35,7 +35,7 @@ jobs:
         id: healthcheck
         continue-on-error: true
         run: |
-          curl -fsS https://automaticfactus.dotacioneszambrano.com/health-NO-EXISTE
+          /opt/homelab/backups/healthcheck-automatic-factus.sh
 
       - name: Rollback if health check fails
         if: steps.healthcheck.outcome == 'failure'
