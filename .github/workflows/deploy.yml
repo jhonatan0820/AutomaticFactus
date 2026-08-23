@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-
+#backups automatico
     steps:
       - name: Backup current version
         run: |
