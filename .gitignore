@@ -7,7 +7,7 @@ target/
 .classpath
 bin/
 
-# Secrets / config local — NUNCA commitear (el archivo se mantiene en tu disco)
+# Secrets / config local — NUNCA sube al repo
 application-secrets.yml
 application-secrets.yaml
 *.env
