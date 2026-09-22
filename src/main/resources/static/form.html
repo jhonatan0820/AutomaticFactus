@@ -1532,7 +1532,7 @@
             // el PDF salga con la cotización ocupando solo una esquina del A4.
             // Solución: abrir el HTML en una ventana nueva a tamaño real y desde ahí
             // usar el diálogo nativo de impresión / Guardar como PDF.
-            const w = window.open('', '_blank');
+            const w = window.open('about:blank', '_blank');
             if (!w) {
                 showToast('Habilita ventanas emergentes para descargar el PDF.', 'error');
                 return;
@@ -1545,13 +1545,21 @@
             w.document.open();
             w.document.write(withTitle);
             w.document.close();
-            // Dar tiempo a que el logo y fuentes carguen antes de disparar el print
+            // Safari puede no emitir "load" después de document.write(). El fallback
+            // evita que el botón termine navegando o dejando la ventana sin imprimir.
+            let printed = false;
+            const printWindow = () => {
+                if (printed || w.closed) return;
+                printed = true;
+                w.focus();
+                w.print();
+            };
             w.addEventListener('load', () => {
                 setTimeout(() => {
-                    w.focus();
-                    w.print();
+                    printWindow();
                 }, 400);
             });
+            setTimeout(printWindow, 900);
             return;
         }
 
