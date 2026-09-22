@@ -926,7 +926,17 @@
                     orderDate: fmtDate(today),
                     effectiveDate: fmtDate(effective),
                     idTypeOrder: currentIdTypeOrder(),
-                    orderNumber: numero
+                    orderNumber: numero,
+                    items: collect().items.map(item => ({
+                        descripcion: item.descripcion,
+                        talla: item.talla,
+                        cantidad: item.cantidad,
+                        precioUnitario: item.precioUnitario,
+                        domicilio: item.descripcion === 'Servicio de Domicilio',
+                        precioDomicilio: item.descripcion === 'Servicio de Domicilio'
+                            ? item.precioUnitario
+                            : null
+                    }))
                 })
             });
             // Recalculamos el siguiente número para la próxima orden.

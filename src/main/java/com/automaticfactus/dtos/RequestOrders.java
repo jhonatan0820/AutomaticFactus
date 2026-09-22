@@ -1,6 +1,7 @@
 package com.automaticfactus.dtos;
 
 import java.time.LocalDate;
+import java.util.List;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -25,6 +26,19 @@ public record RequestOrders(
 	    Integer idTypeOrder,
 
 	    @NotNull
-	    Integer orderNumber
+		Integer orderNumber,
 
-	) {}
+		List<OrderItemRequest> items
+
+		) {
+
+		public record OrderItemRequest(
+				String descripcion,
+				String talla,
+				Integer cantidad,
+				Long precioUnitario,
+				Boolean domicilio,
+				Integer precioDomicilio
+		) {}
+
+	}

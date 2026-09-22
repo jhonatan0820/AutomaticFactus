@@ -65,11 +65,4 @@ public class OrdersController {
 			return ResponseEntity.status(500).build();
 		}
 	}
-	
-	
-	@PostMapping("/guardardetallesOrden")
-	public ResponseEntity<Void> SaveOrderdetails(){
-		return null;
-	}
-	
 }
