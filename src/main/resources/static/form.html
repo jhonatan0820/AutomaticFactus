@@ -1542,24 +1542,25 @@
                 /<title>[^<]*<\/title>/i,
                 '<title>' + (currentDocType === 'factura' ? 'Factura' : 'Cotizacion') + '-' + currentNumero + '</title>'
             );
-            w.document.open();
-            w.document.write(withTitle);
-            w.document.close();
-            // Safari puede no emitir "load" después de document.write(). El fallback
-            // evita que el botón termine navegando o dejando la ventana sin imprimir.
+            // Usar una URL blob evita que Safari deje la ventana en blanco al
+            // bloquear o descartar document.write() en una ventana nueva.
+            const pdfUrl = URL.createObjectURL(new Blob([withTitle], { type: 'text/html' }));
             let printed = false;
             const printWindow = () => {
                 if (printed || w.closed) return;
                 printed = true;
                 w.focus();
                 w.print();
+                setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
             };
             w.addEventListener('load', () => {
                 setTimeout(() => {
                     printWindow();
                 }, 400);
             });
-            setTimeout(printWindow, 900);
+            w.location.replace(pdfUrl);
+            // Fallback para versiones de Safari que no notifican load en blobs.
+            setTimeout(printWindow, 1500);
             return;
         }
 
