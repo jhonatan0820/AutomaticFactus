@@ -1,0 +1,18 @@
+services:
+  automatic-factus-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: automatic-factus-dev:latest
+    container_name: automatic-factus-dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true

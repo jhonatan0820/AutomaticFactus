@@ -1,0 +1,92 @@
+
+name: Deploy AutomaticFactus DEV
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automatic-factus-dev-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    timeout-minutes: 20
+
+    steps:
+      - name: Backup current DEV version
+        id: backup
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          /opt/homelab/backups/backup-automatic-factus-dev.sh
+
+          BACKUP_DIR="$(
+            find /opt/homelab/backups/automatic-factus-dev \
+              -mindepth 1 -maxdepth 1 -type d \
+              -name '*_commit-*' -printf '%T@ %p\n' |
+              sort -nr | head -n 1 | cut -d' ' -f2-
+          )"
+
+          test -n "$BACKUP_DIR"
+          echo "backup_name=$(basename "$BACKUP_DIR")" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy DEV
+        id: deploy
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          cd /opt/homelab/compose/apps/automatic-factus-dev
+          git fetch origin develop
+          git switch develop
+          git reset --hard origin/develop
+
+          docker compose build
+          docker compose up -d
+
+      - name: Health check DEV
+        id: healthcheck
+        if: steps.deploy.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          /opt/homelab/backups/healthcheck-automatic-factus-dev.sh
+
+      - name: Rollback DEV on failure
+        if: always() && steps.backup.outcome == 'success' && (steps.deploy.outcome == 'failure' || steps.healthcheck.outcome == 'failure')
+        shell: bash
+        env:
+          BACKUP_NAME: ${{ steps.backup.outputs.backup_name }}
+        run: |
+          set -Eeuo pipefail
+
+          echo "Falló el despliegue o el health check de DEV."
+          AUTO_ROLLBACK=true \
+            /opt/homelab/backups/rollback-automatic-factus-dev.sh \
+            "$BACKUP_NAME"
+
+      - name: Register deployed DEV version
+        if: steps.healthcheck.outcome == 'success'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          cd /opt/homelab/compose/apps/automatic-factus-dev
+          git rev-parse HEAD > \
+            /opt/homelab/backups/automatic-factus-dev/current-deployed-commit
+
+      - name: Fail workflow if deployment failed
+        if: always() && (steps.deploy.outcome == 'failure' || steps.healthcheck.outcome == 'failure')
+        shell: bash
+        run: |
+          echo "El despliegue DEV falló. Revisa el resultado del rollback."
+          exit 1
+
