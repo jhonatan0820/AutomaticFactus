@@ -4,6 +4,7 @@ import com.automaticfactus.service.QuotationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,18 +22,19 @@ public class QuotationController {
         this.service = service;
     }
 
-    /** POST /api/cotizacion — devuelve el HTML del PDF a partir del JSON del form. */
-    @PostMapping(value = "/api/cotizacion", produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> render(@RequestBody JsonNode payload) {
+    /** POST /api/cotizacion — devuelve el PDF generado en el servidor. */
+    @PostMapping(value = "/api/cotizacion", produces = "application/pdf")
+    public ResponseEntity<byte[]> render(@RequestBody JsonNode payload) {
         try {
-            String html = service.renderFromPayload(payload);
+            byte[] pdf = service.renderPdfFromPayload(payload);
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("text/html;charset=UTF-8"))
-                    .body(html);
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"documento.pdf\"")
+                    .body(pdf);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .contentType(MediaType.parseMediaType("text/plain;charset=UTF-8"))
-                    .body("Error: " + e.getMessage());
+                    .body(("Error: " + e.getMessage()).getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
     }
 

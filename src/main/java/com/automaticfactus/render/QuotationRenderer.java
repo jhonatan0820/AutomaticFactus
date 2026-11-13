@@ -7,7 +7,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -76,6 +79,21 @@ public class QuotationRenderer {
         ctx.setVariable("docTitle", titleCap);
         ctx.setVariable("docTitleLower", titleLow);
         return engine.process("quotation/quotation", ctx);
+    }
+
+    public byte[] renderPdf(Quotation q, String docType) {
+        String html = render(q, docType);
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            new PdfRendererBuilder()
+                    .useFastMode()
+                    .useDefaultPageSize(210, 297, BaseRendererBuilder.PageSizeUnits.MM)
+                    .withHtmlContent(html, null)
+                    .toStream(output)
+                    .run();
+            return output.toByteArray();
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo generar el PDF", e);
+        }
     }
 
     private ItemRow asRow(QuotationItem it) {

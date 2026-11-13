@@ -36,10 +36,10 @@ public class QuotationService {
         return orders.findMaxIdOrder() + 1;
     }
 
-    public String renderFromPayload(JsonNode payload) {
+    public byte[] renderPdfFromPayload(JsonNode payload) {
         Quotation q = buildFromPayload(payload);
         String docType = text(payload, "documentType");
-        return renderer.render(q, docType);
+        return renderer.renderPdf(q, docType);
     }
 
     // ---------------- helpers ----------------
