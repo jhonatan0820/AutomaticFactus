@@ -3,7 +3,7 @@
 <body>
 <header th:fragment="header(empresa)" class="doc-header">
     <div class="doc-header__brand">
-        <img th:if="${logoDataUri != null}" th:src="${logoDataUri}" alt="Logo" class="doc-header__logo-img">
+        <img th:if="${logoDataUri != null}" th:src="${logoDataUri}" alt="Logo" class="doc-header__logo-img" />
         <div th:unless="${logoDataUri != null}" class="doc-header__logo" aria-hidden="true">DZ</div>
         <div class="doc-header__company">
             <h1 class="doc-header__name" th:text="${empresa.name}">Empresa</h1>

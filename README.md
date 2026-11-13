@@ -1,214 +1,289 @@
 # AutomaticFactus
 
-Aplicación web para apoyar y automatizar procesos comerciales relacionados con cotizaciones y facturación electrónica. El backend está desarrollado con Java y Spring Boot, utiliza MySQL para la persistencia y puede ejecutarse en contenedores Docker.
+<p align="center">
+  <strong>Automated PDF Generation for Business Documents</strong>
+</p>
 
-El proyecto también contempla entornos separados de desarrollo y producción, con despliegues automatizados y verificaciones de salud.
+<p align="center">
+  A backend-driven application for generating professional business quotations and invoices using reusable HTML templates and automated PDF rendering.
+</p>
 
-## Contenido
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-ED8B00?style=flat-square&logo=openjdk&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.3.4-6DB33F?style=flat-square&logo=springboot&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=flat-square&logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/Status-Active-55C878?style=flat-square" />
+</p>
 
-- [Funcionalidades](#funcionalidades)
-- [Tecnologías](#tecnologías)
-- [Arquitectura y despliegue](#arquitectura-y-despliegue)
-- [Ejecución local](#ejecución-local)
-- [Configuración](#configuración)
-- [API disponible](#api-disponible)
-- [CI/CD](#cicd)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Seguridad](#seguridad)
+---
 
-## Funcionalidades
+## Overview
 
-- Consulta y registro de clientes.
-- Consulta de tipos de identificación y tipos de orden.
-- Registro de órdenes y consulta del siguiente número de orden.
-- Generación del contenido HTML de una cotización a partir de los datos recibidos.
-- Consulta del siguiente número de cotización.
-- Endpoints para comprobar la disponibilidad de la aplicación y el estado de la conexión con la base de datos.
+**AutomaticFactus** is a document generation application designed to automate the creation of professional business quotations and invoices in PDF format.
 
-El objetivo del proyecto es reducir tareas manuales en los procesos comerciales y facilitar la gestión de la información. La implementación funcional puede evolucionar a medida que se agreguen nuevas integraciones y módulos.
+The application centralizes document processing in a Java and Spring Boot backend, transforming commercial data into structured HTML templates and converting them into PDF files.
 
-## Tecnologías
+Instead of manually creating and formatting documents, users can submit the required information and obtain consistently structured PDF documents through an automated workflow.
 
-| Tecnología | Uso |
+### Key capabilities
+
+- **PDF Generation:** Automatically generates PDF documents from commercial information.
+- **Reusable Templates:** Uses Thymeleaf to render structured HTML document templates.
+- **HTML-to-PDF Conversion:** Converts rendered HTML into PDF files using OpenHTMLtoPDF and Apache PDFBox.
+- **Document Numbering:** Handles quotation and order numbering.
+- **Client Information:** Supports client lookup and registration.
+- **REST API:** Exposes endpoints for document generation and supporting operations.
+- **Containerized Deployment:** Supports Docker-based execution and automated deployment workflows.
+
+## How It Works
+
+The document generation process is handled by the backend.
+
+```mermaid
+flowchart TD
+    A["Frontend"] -->|"JSON request"| B["Spring Boot API"]
+    B --> C["Business Data Processing"]
+    C --> D["Thymeleaf HTML Templates"]
+    D --> E["OpenHTMLtoPDF"]
+    E --> F["Apache PDFBox"]
+    F --> G["Generated PDF Bytes"]
+    G -->|"PDF response"| A
+    A --> H["Preview / Download PDF"]
+```
+
+### Generation workflow
+
+1. The frontend sends the document information through a REST API request.
+2. Spring Boot receives and processes the submitted data.
+3. Thymeleaf renders the corresponding HTML template.
+4. OpenHTMLtoPDF converts the generated HTML into a PDF document.
+5. Apache PDFBox handles the PDF generation process.
+6. The backend returns the resulting PDF as binary data to the frontend.
+
+**The PDF is generated entirely on the backend.** The browser only receives and displays the resulting document or allows the user to download it.
+
+## Technology Stack
+
+| Category | Technologies |
 | --- | --- |
-| Java 17 | Lenguaje de programación |
-| Spring Boot 3.3.4 | Aplicación web y API |
-| Spring Data JPA / Hibernate | Persistencia y acceso a datos |
-| MySQL | Base de datos relacional |
-| Maven | Dependencias y construcción |
-| Thymeleaf | Renderizado de plantillas HTML de cotización |
-| Docker | Construcción y ejecución en contenedores |
-| GitHub Actions | Automatización de despliegues |
+| Language | Java 17 |
+| Backend Framework | Spring Boot 3.3.4 |
+| Data Persistence | Spring Data JPA / Hibernate |
+| Database | MySQL |
+| Template Engine | Thymeleaf |
+| PDF Generation | OpenHTMLtoPDF |
+| PDF Processing | Apache PDFBox |
+| Build Tool | Maven |
+| Containerization | Docker |
+| CI/CD | GitHub Actions |
 
-## Arquitectura y despliegue
+## Project Architecture
 
-La aplicación Spring Boot sirve la interfaz web y los endpoints de la API, y se conecta a MySQL mediante variables de entorno. Docker empaqueta la aplicación para ejecutarla en distintos entornos.
+The application follows a layered backend structure, separating HTTP endpoints, data models, persistence operations, business logic, and document rendering.
 
-El repositorio incluye dos opciones de despliegue:
+```text
+src/main/java/com/automaticfactus/
+│
+├── controller/       # REST API endpoints
+├── dtos/             # Request and data transfer objects
+├── entities/         # JPA entities
+├── model/            # Application models
+├── render/           # Document rendering components
+├── repositories/     # Database access layer
+└── service/          # Business logic
+```
 
-- **Render:** [render.yaml](render.yaml) define un servicio web basado en Docker con `/health` como health check.
-- **Servidor propio (homelab):** [docker-compose.yml](docker-compose.yml) define el contenedor de desarrollo en la red Docker externa `homelab`. Los workflows de GitHub Actions para `main` y `develop` despliegan en los entornos respectivos.
+Application resources:
 
-En la infraestructura propia, los dominios de producción y desarrollo se publican mediante Cloudflare Tunnel y Nginx, según la configuración del servidor. La configuración del servidor, de la red y de la base de datos debe administrarse fuera del repositorio.
+```text
+src/main/resources/
+│
+├── application.properties
+├── static/
+│   ├── form.html
+│   └── img/
+└── templates/
+    ├── layout/
+    └── quotation/
+```
 
-## Ejecución local
+## API Reference
 
-### Requisitos
+The application exposes REST endpoints for client operations, document numbering, order processing, and PDF generation.
 
-- JDK 17.
-- Maven 3.9 o compatible.
-- Una instancia de MySQL accesible.
-- Docker Engine y Docker Compose, si se ejecuta en contenedor.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/health` | Application health check |
+| GET | `/api/db-status` | Database connectivity status |
+| GET | `/api/clientes/buscar` | Search for a client by identification |
+| POST | `/api/clientes/guardarCliente` | Register or update a client |
+| POST | `/api/orders/guardarOrden` | Register an order |
+| GET | `/api/orders/proximo-numero` | Retrieve the next order number |
+| GET | `/api/tipos-identificacion` | Retrieve identification types |
+| GET | `/api/tipos-orden` | Retrieve order types |
+| POST | `/api/cotizacion` | Generate and return a PDF document |
+| GET | `/api/cotizacion/proximo-numero` | Retrieve the next quotation number |
 
-### 1. Clonar el repositorio
+### PDF Generation Endpoint
+
+`POST /api/cotizacion`
+
+Receives document information in JSON format, processes the request, renders the corresponding template, and returns the generated PDF as binary data.
+
+The frontend can use the response to display or download the generated document.
+
+## Getting Started
+
+### Prerequisites
+
+- Java Development Kit 17
+- Maven 3.9 or compatible
+- MySQL Server
+- Docker Engine (optional)
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/jhonatan0820/AutomaticFactus.git
+
 cd AutomaticFactus
 ```
 
-Para trabajar con la rama de desarrollo:
+### 2. Configure environment variables
 
-```bash
-git switch develop
-git pull origin develop
+The application requires the following environment variables to connect to MySQL:
+
+| Variable | Description |
+| --- | --- |
+| `URL_MYSQL` | MySQL JDBC connection URL |
+| `USER_MYSQL` | Database username |
+| `PASS_MYSQL` | Database password |
+| `PORT` | Application HTTP port (optional) |
+
+Example configuration:
+
+```dotenv
+URL_MYSQL=jdbc:mysql://localhost:3306/automaticfactus
+USER_MYSQL=your_username
+PASS_MYSQL=your_password
+PORT=8080
 ```
 
-### 2. Configurar la conexión a MySQL
+Do not commit credentials or sensitive configuration files to the repository.
 
-Define las variables de entorno indicadas en [Configuración](#configuración). Para una ejecución local con Maven, configúralas en la sesión del sistema o en el entorno de desarrollo.
+### 3. Run the application
 
-### 3. Ejecutar con Maven
+Using Maven:
 
 ```bash
 mvn spring-boot:run
 ```
 
-La aplicación escucha en el puerto `8080` de forma predeterminada. Puedes cambiarlo mediante la variable `PORT`.
+The application will start on:
 
-Para construir el artefacto:
+```text
+http://localhost:8080
+```
+
+### 4. Build the application
 
 ```bash
 mvn clean package
 ```
 
-### Ejecutar con Docker Compose
+The generated executable JAR will be available in the `target/` directory.
 
-El Compose incluido está preparado para el despliegue de desarrollo en el homelab: requiere un archivo `.env` y una red Docker externa llamada `homelab`. No publica un puerto del contenedor en el host. En otra instalación, crea esa red o adapta la configuración de red y agrega una publicación de puertos si necesitas acceder desde el host.
+### 5. Run with Docker
 
-```bash
-docker network create homelab
-docker compose build
-docker compose up -d
-```
-
-Comandos útiles:
+Build the image:
 
 ```bash
-docker compose logs -f
-docker compose ps
-docker compose down
+docker build -t automatic-factus .
 ```
 
-Para comprobar el endpoint desde el host, usa la ejecución local con Maven o configura una publicación de puertos en Compose. Por ejemplo:
+Run the container:
 
 ```bash
-curl -i http://localhost:8080/health
+docker run -d \
+  --name automatic-factus \
+  -p 8080:8080 \
+  -e URL_MYSQL="jdbc:mysql://host.docker.internal:3306/automaticfactus" \
+  -e USER_MYSQL="your_username" \
+  -e PASS_MYSQL="your_password" \
+  automatic-factus
 ```
 
-## Configuración
+Verify the application:
 
-La aplicación carga la configuración sensible desde variables de entorno. Para MySQL se requieren:
-
-| Variable | Descripción | Ejemplo |
-| --- | --- | --- |
-| `URL_MYSQL` | URL JDBC de la base de datos | `jdbc:mysql://localhost:3306/automaticfactus` |
-| `USER_MYSQL` | Usuario de MySQL | `usuario` |
-| `PASS_MYSQL` | Contraseña de MySQL | `contraseña` |
-| `PORT` | Puerto HTTP de la aplicación; opcional | `8080` |
-
-Ejemplo de archivo `.env` para uso local:
-
-```dotenv
-URL_MYSQL=jdbc:mysql://localhost:3306/automaticfactus
-USER_MYSQL=usuario
-PASS_MYSQL=contraseña
-PORT=8080
+```bash
+curl http://localhost:8080/health
 ```
 
-El archivo `.env` está excluido del control de versiones. También se puede usar `application-secrets.yml` local; el archivo es opcional y está excluido de Git. No reutilices credenciales de producción en desarrollo.
+## Deployment and Infrastructure
 
-## API disponible
+AutomaticFactus includes containerization and deployment configuration for different environments.
 
-| Método | Ruta | Descripción |
-| --- | --- | --- |
-| `GET` | `/health` | Comprueba que el backend responde. Devuelve `ok`; no comprueba la base de datos. |
-| `GET` | `/api/db-status` | Indica si la base de datos está lista. |
-| `GET` | `/api/clientes/buscar?sigla=CC&numero=1234` | Busca un cliente por tipo y número de identificación. |
-| `POST` | `/api/clientes/guardarCliente` | Crea o actualiza un cliente. |
-| `POST` | `/api/orders/guardarOrden` | Guarda una orden. |
-| `GET` | `/api/orders/proximo-numero?idTypeOrder=1` | Consulta el siguiente número de orden para el tipo indicado. |
-| `GET` | `/api/tipos-identificacion` | Lista tipos de identificación. |
-| `GET` | `/api/tipos-orden` | Lista tipos de orden. |
-| `POST` | `/api/cotizacion` | Recibe los datos de una cotización en JSON y devuelve su contenido HTML. |
-| `GET` | `/api/cotizacion/proximo-numero` | Consulta el siguiente número de cotización. |
+### Docker
 
-Consulta los controladores y DTOs del proyecto para conocer los formatos de solicitud y respuesta de cada operación.
+The application uses a multi-stage Docker build:
 
-## CI/CD
+- Maven with Eclipse Temurin 17 for compilation.
+- Eclipse Temurin 17 JRE Alpine for runtime execution.
 
-Los workflows se ejecutan en runners `self-hosted`:
+This reduces the final image size by separating the build environment from the execution environment.
 
-- [deploy.yml](.github/workflows/deploy.yml): despliega los cambios publicados en `main` al entorno de producción.
-- [deploy-dev.yml](.github/workflows/deploy-dev.yml): despliega los cambios publicados en `develop` al entorno de desarrollo; también permite ejecución manual.
+### GitHub Actions
 
-Ambos flujos realizan un backup previo, construyen y levantan el contenedor, y ejecutan un health check. El flujo de desarrollo intenta restaurar la versión anterior si falla el despliegue o el health check; el flujo de producción intenta hacerlo si falla el health check. Las rutas y los scripts de backup del servidor están configurados en los workflows y deben existir en el runner.
+The repository includes a self-hosted deployment workflow:
 
-El health check `/health` verifica que el backend esté disponible. El endpoint `/api/db-status` puede utilizarse por separado para consultar el estado de la base de datos.
+- `.github/workflows/deploy.yml`
 
-## Estructura del proyecto
+The workflow automates the production deployment process, including:
 
-```text
-AutomaticFactus/
-├── .github/
-│   └── workflows/
-│       ├── deploy.yml
-│       └── deploy-dev.yml
-├── src/
-│   └── main/
-│       ├── java/com/automaticfactus/
-│       │   ├── controller/
-│       │   ├── dtos/
-│       │   ├── entities/
-│       │   ├── model/
-│       │   ├── render/
-│       │   ├── repositories/
-│       │   └── service/
-│       └── resources/
-│           ├── application.properties
-│           ├── static/
-│           └── templates/
-├── Dockerfile
-├── docker-compose.yml
-├── pom.xml
-├── render.yaml
-└── README.md
-```
+- Application backup.
+- Source code synchronization.
+- Docker image build and container deployment.
+- Health verification.
+- Rollback procedures when deployment checks fail.
+- Docker image cleanup.
 
-## Seguridad
+### Infrastructure
 
-- Mantén `.env`, `application-secrets.yml` y otras credenciales fuera de Git.
-- Usa credenciales y bases de datos independientes para desarrollo y producción.
-- Restringe el acceso a los secretos del runner y del servidor de despliegue.
-- Revisa periódicamente las dependencias, los permisos de los backups y la configuración de los workflows.
-- No expongas directamente los puertos internos del servidor cuando la infraestructura de publicación pueda enrutar el tráfico de forma segura.
+The production infrastructure uses:
 
-## Entornos publicados
+- Debian Linux.
+- Docker and Docker Compose on the server.
+- Nginx.
+- Cloudflare Tunnel.
+- GitHub Actions self-hosted runner.
 
-- **Producción:** URL no publicada por seguridad de la información.
-- **Desarrollo:** [automaticfactus-dev.dotacioneszambrano.com](https://automaticfactus-dev.dotacioneszambrano.com/)
+Infrastructure configuration and sensitive deployment settings are maintained outside the application repository.
 
-## Autor
+## Security Considerations
 
-**Jhonatan Traslaviña**  
-Repositorio: [jhonatan0820/AutomaticFactus](https://github.com/jhonatan0820/AutomaticFactus)
+- Database credentials are supplied through environment variables.
+- Sensitive configuration files are excluded from version control.
+- Production and development environments should use independent credentials.
+- Deployment secrets must be protected in GitHub Actions and the server.
+- Internal infrastructure ports should not be exposed unnecessarily.
+
+## Environments
+
+- **Production:** Deployment environment not publicly documented.
+- **Development:** [automaticfactus-dev.dotacioneszambrano.com](https://automaticfactus-dev.dotacioneszambrano.com/)
+
+## Author
+
+**Jhonatan Traslaviña**
+
+Software Developer | Backend Engineering | Automation
+
+- GitHub: [@jhonatan0820](https://github.com/jhonatan0820)
+- Repository: [AutomaticFactus](https://github.com/jhonatan0820/AutomaticFactus)
+
+---
+
+<p align="center">
+  <sub>Built with Java, Spring Boot, and a focus on process automation.</sub>
+</p>
